@@ -243,6 +243,12 @@ public sealed class Pm3ConnectionService : IDisposable
             if (string.IsNullOrWhiteSpace(line))
                 continue;
 
+            if (line.Contains(".ncd", StringComparison.OrdinalIgnoreCase) && info.FpgaVersion.Length == 0)
+            {
+                info.FpgaVersion = line;
+                continue;
+            }
+
             var parts = SplitDeviceInfoKeyValue(line);
             if (parts.Length < 2)
                 continue;

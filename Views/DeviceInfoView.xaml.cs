@@ -9,18 +9,21 @@ namespace Proxmark3GUI.Views;
 
 public partial class DeviceInfoView : UserControl
 {
+    private EventHandler<(string CommandType, string Line)>? _commandOutputHandler;
+
     public DeviceInfoView()
     {
         InitializeComponent();
         this.Loaded += DeviceInfoView_Loaded;
+        this.Unloaded += DeviceInfoView_Unloaded;
     }
 
     private void DeviceInfoView_Loaded(object sender, RoutedEventArgs e)
     {
         // Subscribe to real-time device info and tag detection updates
-        if (Application.Current.MainWindow?.DataContext is MainViewModel vm)
+        if (Application.Current.MainWindow?.DataContext is MainViewModel vm && _commandOutputHandler is null)
         {
-            vm.CommandOutputReceived += (s, output) =>
+            _commandOutputHandler = (s, output) =>
             {
                 Application.Current.Dispatcher.BeginInvoke(() =>
                 {
@@ -41,6 +44,17 @@ public partial class DeviceInfoView : UserControl
                     }
                 });
             };
+
+            vm.CommandOutputReceived += _commandOutputHandler;
+        }
+    }
+
+    private void DeviceInfoView_Unloaded(object sender, RoutedEventArgs e)
+    {
+        if (Application.Current.MainWindow?.DataContext is MainViewModel vm && _commandOutputHandler is not null)
+        {
+            vm.CommandOutputReceived -= _commandOutputHandler;
+            _commandOutputHandler = null;
         }
     }
 
@@ -50,6 +64,15 @@ public partial class DeviceInfoView : UserControl
             return;
 
         var normalized = line.Trim().Trim('[', '+', ']', ' ');
+        if (normalized.Contains(".ncd", StringComparison.OrdinalIgnoreCase) && !normalized.Contains(":") && !normalized.Contains("=") && !normalized.Contains(".."))
+        {
+            if (TxtFpgaVersion != null)
+                TxtFpgaVersion.Text = normalized;
+
+            UpdateFpgaStatus(normalized);
+            return;
+        }
+
         var parts = normalized.Split(new[] { ':', '=' }, 2, StringSplitOptions.None);
         if (parts.Length < 2)
         {
@@ -135,6 +158,7 @@ public partial class DeviceInfoView : UserControl
     private async void BtnRefresh_Click(object sender, RoutedEventArgs e)
     {
         BtnRefresh.IsEnabled = false;
+        ClearDeviceInfoDisplay();
         try
         {
             var vm = Application.Current.MainWindow?.DataContext as MainViewModel;
@@ -200,19 +224,35 @@ public partial class DeviceInfoView : UserControl
     {
         if (info == null) return;
 
-        TxtFirmwareVersion.Text = info.FirmwareVersion;
-        TxtHardwareVersion.Text = info.HardwareVersion;
-        TxtPm3Uid.Text = info.Pm3Uid;
-        TxtFpgaVersion.Text = info.FpgaVersion;
-        TxtFlashSize.Text = info.FlashSize;
-        TxtSerialNumber.Text = info.SerialNumber;
-        TxtBootloaderVersion.Text = info.BootloaderVersion;
-        TxtUartSpeed.Text = info.UartSpeed;
+        TxtFirmwareVersion.Text = string.IsNullOrWhiteSpace(info.FirmwareVersion) ? "--" : info.FirmwareVersion;
+        TxtHardwareVersion.Text = string.IsNullOrWhiteSpace(info.HardwareVersion) ? "--" : info.HardwareVersion;
+        TxtPm3Uid.Text = string.IsNullOrWhiteSpace(info.Pm3Uid) ? "--" : info.Pm3Uid;
+        TxtFpgaVersion.Text = string.IsNullOrWhiteSpace(info.FpgaVersion) ? "--" : info.FpgaVersion;
+        TxtFlashSize.Text = string.IsNullOrWhiteSpace(info.FlashSize) ? "--" : info.FlashSize;
+        TxtSerialNumber.Text = string.IsNullOrWhiteSpace(info.SerialNumber) ? "--" : info.SerialNumber;
+        TxtBootloaderVersion.Text = string.IsNullOrWhiteSpace(info.BootloaderVersion) ? "--" : info.BootloaderVersion;
+        TxtUartSpeed.Text = string.IsNullOrWhiteSpace(info.UartSpeed) ? "--" : info.UartSpeed;
 
-        TxtHfPeakV.Text = $"{info.HfPeakV} V";
-        TxtHfFreq.Text = $"{info.HfFreq} MHz";
-        TxtLfPeakV.Text = $"{info.LfPeakV} V";
-        TxtLfFreq.Text = $"{info.LfFreq} kHz";
+        TxtHfPeakV.Text = string.IsNullOrWhiteSpace(info.HfPeakV) ? "-- V" : $"{info.HfPeakV} V";
+        TxtHfFreq.Text = string.IsNullOrWhiteSpace(info.HfFreq) ? "-- MHz" : $"{info.HfFreq} MHz";
+        TxtLfPeakV.Text = string.IsNullOrWhiteSpace(info.LfPeakV) ? "-- V" : $"{info.LfPeakV} V";
+        TxtLfFreq.Text = string.IsNullOrWhiteSpace(info.LfFreq) ? "-- kHz" : $"{info.LfFreq} kHz";
+    }
+
+    private void ClearDeviceInfoDisplay()
+    {
+        if (TxtFirmwareVersion != null) TxtFirmwareVersion.Text = "Refreshing...";
+        if (TxtHardwareVersion != null) TxtHardwareVersion.Text = "Refreshing...";
+        if (TxtPm3Uid != null) TxtPm3Uid.Text = "Refreshing...";
+        if (TxtFpgaVersion != null) TxtFpgaVersion.Text = "Refreshing...";
+        if (TxtFlashSize != null) TxtFlashSize.Text = "Refreshing...";
+        if (TxtSerialNumber != null) TxtSerialNumber.Text = "Refreshing...";
+        if (TxtBootloaderVersion != null) TxtBootloaderVersion.Text = "Refreshing...";
+        if (TxtUartSpeed != null) TxtUartSpeed.Text = "Refreshing...";
+        if (TxtHfPeakV != null) TxtHfPeakV.Text = "-- V";
+        if (TxtHfFreq != null) TxtHfFreq.Text = "-- MHz";
+        if (TxtLfPeakV != null) TxtLfPeakV.Text = "-- V";
+        if (TxtLfFreq != null) TxtLfFreq.Text = "-- kHz";
     }
 
     /// <summary>

@@ -9,7 +9,7 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>Proxmark3GUI</AssemblyName>
     <RootNamespace>Proxmark3GUI</RootNamespace>
-    <Version>1.0.0</Version>
+    <Version>2.0.0</Version>
     <Authors>PM3 Operator</Authors>
     <Description>Comprehensive Proxmark3 GUI Client for UART64 communication</Description>
   </PropertyGroup>

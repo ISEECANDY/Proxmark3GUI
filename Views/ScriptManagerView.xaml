@@ -1,0 +1,182 @@
+<UserControl x:Class="Proxmark3GUI.Views.ScriptManagerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="800" d:DesignWidth="900"
+             Background="{StaticResource BgDark}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Panel Title -->
+        <StackPanel Grid.Row="0" Margin="24,16,24,4">
+            <TextBlock Text="&#x1F4BB; Script Manager" Style="{StaticResource PanelTitle}"/>
+            <TextBlock Text="Browse, edit, and run Lua/Cmd/Python scripts"
+                       Style="{StaticResource PanelSubtitle}"/>
+        </StackPanel>
+
+        <!-- Toolbar -->
+        <Border Grid.Row="1" Background="{StaticResource BgMedium}" Padding="12,8" Margin="24,0,24,12"
+                CornerRadius="6">
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="BtnNewScript" Content="&#x2795; New" Style="{StaticResource FlatButton}"
+                        Padding="10,6" Margin="0,0,6,0" Click="BtnNewScript_Click"/>
+                <Button x:Name="BtnOpenScript" Content="&#x1F4C2; Open" Style="{StaticResource FlatButton}"
+                        Padding="10,6" Margin="0,0,6,0" Click="BtnOpenScript_Click"/>
+                <Button x:Name="BtnSaveScript" Content="&#x1F4BE; Save" Style="{StaticResource FlatButton}"
+                        Padding="10,6" Margin="0,0,6,0" Click="BtnSaveScript_Click"/>
+                <Separator Width="1" Background="{StaticResource BorderLight}" Margin="6,2,6,2"/>
+                <Button x:Name="BtnRunScript" Content="&#x25B6; Run" Style="{StaticResource AccentButton}"
+                        Padding="10,6" Margin="0,0,6,0" Click="BtnRunScript_Click"/>
+                <Button x:Name="BtnStopScript" Content="&#x23F9; Stop" Style="{StaticResource FlatButton}"
+                        Padding="10,6" Margin="0,0,16,0" Click="BtnStopScript_Click"/>
+
+                <Separator Width="1" Background="{StaticResource BorderLight}" Margin="0,2,16,2"/>
+
+                <TextBlock Text="Language:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <ComboBox x:Name="CmbLanguage" Style="{StaticResource DarkComboBox}" Width="120"
+                          SelectionChanged="CmbLanguage_SelectionChanged">
+                    <ComboBoxItem Content="Lua" IsSelected="True"/>
+                    <ComboBoxItem Content="Cmd"/>
+                    <ComboBoxItem Content="Python"/>
+                </ComboBox>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Split Area: File Tree + Editor -->
+        <Grid Grid.Row="2" Margin="24,0,24,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- File Tree -->
+            <Border Grid.Column="0" Background="{StaticResource BgMedium}" CornerRadius="6"
+                    BorderBrush="{StaticResource BorderDark}" BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" BorderBrush="{StaticResource BorderDark}" BorderThickness="0,0,0,1">
+                        <TextBlock Text="Script Files" Foreground="{StaticResource TextSecondary}"
+                                   FontSize="12" FontWeight="SemiBold" Padding="10,8"/>
+                    </Border>
+                    <TreeView Grid.Row="1" x:Name="ScriptTree" Background="Transparent"
+                              Foreground="{StaticResource TextPrimary}" FontSize="12"
+                              BorderThickness="0" Padding="4"
+                              SelectedItemChanged="ScriptTree_SelectedItemChanged">
+                        <TreeViewItem Header="&#x1F4C1; Lua" IsExpanded="True">
+                            <TreeViewItem Header="hf_mf_autopwn.lua"/>
+                            <TreeViewItem Header="hf_dump.lua"/>
+                            <TreeViewItem Header="lf_em410x_sim.lua"/>
+                            <TreeViewItem Header="trace_decode.lua"/>
+                        </TreeViewItem>
+                        <TreeViewItem Header="&#x1F4C1; Cmd" IsExpanded="True">
+                            <TreeViewItem Header="hf_search.cmd"/>
+                            <TreeViewItem Header="hf_mf_chk.cmd"/>
+                            <TreeViewItem Header="lf_search.cmd"/>
+                        </TreeViewItem>
+                        <TreeViewItem Header="&#x1F4C1; Python" IsExpanded="False">
+                            <TreeViewItem Header="batch_crack.py"/>
+                            <TreeViewItem Header="export_keys.py"/>
+                        </TreeViewItem>
+                    </TreeView>
+                </Grid>
+            </Border>
+
+            <!-- Grid Splitter -->
+            <GridSplitter Grid.Column="1" Width="3" Background="{StaticResource BorderDark}"
+                          HorizontalAlignment="Center"/>
+
+            <!-- Script Editor -->
+            <Border Grid.Column="2" Background="{StaticResource BgDark}" CornerRadius="6"
+                    BorderBrush="{StaticResource BorderDark}" BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBox x:Name="TxtEditor" Background="Transparent"
+                             Foreground="{StaticResource TextPrimary}"
+                             FontFamily="Consolas" FontSize="13"
+                             AcceptsReturn="True" AcceptsTab="True"
+                             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                             Padding="12,8" BorderThickness="0"
+                             TextWrapping="NoWrap"
+                             TextChanged="TxtEditor_TextChanged"
+                             Text="-- Lua script editor&#x0A;-- Select a script from the tree or create new&#x0A;&#x0A;print(&quot;Hello from Proxmark3!&quot;)&#x0A;">
+                    </TextBox>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Script Parameters -->
+        <Border Grid.Row="3" Background="{StaticResource BgMedium}" Padding="12,8" Margin="24,8,24,0"
+                CornerRadius="6">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Parameters:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,0"/>
+                <TextBox x:Name="TxtParamName" Style="{StaticResource DarkTextBox}" Width="120"
+                         Text="param1" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                <TextBlock Text="=" Foreground="{StaticResource TextDim}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,4,0"/>
+                <TextBox x:Name="TxtParamValue" Style="{StaticResource DarkTextBox}" Width="160"
+                         Text="" VerticalAlignment="Center"/>
+                <Button Content="Add" Style="{StaticResource FlatButton}" Padding="8,4" Margin="8,0,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Output Console -->
+        <Border Grid.Row="4" Background="{StaticResource BgDark}" Margin="24,8,24,0"
+                BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="6">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="100"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" BorderBrush="{StaticResource BorderDark}" BorderThickness="0,0,0,1">
+                    <TextBlock Text="Output" Foreground="{StaticResource TextSecondary}" FontSize="11"
+                               FontWeight="SemiBold" Padding="10,4"/>
+                </Border>
+                <TextBox Grid.Row="1" x:Name="TxtOutput" Background="Transparent"
+                         Foreground="{StaticResource AccentGreen}" FontFamily="Consolas" FontSize="11"
+                         IsReadOnly="True" VerticalScrollBarVisibility="Auto"
+                         Padding="10,6" BorderThickness="0" AcceptsReturn="True"
+                         Text="Ready."/>
+            </Grid>
+        </Border>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="5" Background="{StaticResource BgMedium}" Padding="12,6" Margin="24,8,24,16"
+                CornerRadius="6">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Foreground="{StaticResource TextDim}" FontSize="11" VerticalAlignment="Center">
+                    <Run Text="File: "/><Run x:Name="TxtCurrentFile" Text="untitled.lua" Foreground="{StaticResource TextSecondary}"/>
+                </TextBlock>
+
+                <TextBlock Grid.Column="2" Foreground="{StaticResource TextDim}" FontSize="11" VerticalAlignment="Center">
+                    <Run x:Name="TxtModified" Text="" Foreground="{StaticResource AccentOrange}"/>
+                </TextBlock>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

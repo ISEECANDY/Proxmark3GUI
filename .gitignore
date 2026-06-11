@@ -1,0 +1,48 @@
+# Build outputs
+bin/
+obj/
+Debug/
+Release/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider files
+.idea/
+*.sln.iml
+
+# Visual Studio Code files
+.vscode/
+
+# Logs
+*.log
+*.txt
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Proxmark client temporary and local files
+client/.proxmark3/
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+
+# Build artifacts
+*.dll
+*.exe
+*.pdb
+
+# Generated files
+*.g.cs
+*.g.i.cs
+*.cache
+
+# User-specific
+*.userprefs

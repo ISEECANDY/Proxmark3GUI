@@ -1,0 +1,28 @@
+Module Name,Buttons Status,Data Type,Key Methods Used,Compilation Issues,TODOs Count,Severity
+DeviceInfoView,✓ Fully Wired,Real,"GetDeviceInfoAsync(), SendCommandAsync('hw info')",None,0,STABLE
+CommandsView,Filtering Only,Simulated,CommandDatabase.GetAllCommands(),None,0,STABLE
+KeyCrackingView,⚠ Incomplete,Placeholder,None,Non-functional - UI only,0,CRITICAL
+DumpExplorerView,✓ Fully Wired,Real,File I/O,Minor - GoToOffset TODO,1,STABLE
+SettingsView,✓ Fully Wired,Settings,SerialPort.GetPortNames(),None,0,STABLE
+QuickActionsView,⚠ Wired But Incomplete,Placeholder,None - TODO in SendQuickAction,CRITICAL - Commands not sent,1,CRITICAL
+ReferenceView,Display Only,Static Reference,None,None,0,STABLE
+TagDatabaseView,⚠ Partially Wired,Simulated,None,CRITICAL - Multiple TODOs and no persistence,4,CRITICAL
+ScriptManagerView,⚠ Partially Wired,Simulated,File I/O,CRITICAL - Script execution not implemented,3,CRITICAL
+TraceAnalyzerView,⚠ Partially Wired,Simulated,None,CRITICAL - Export and filter TODO,4,CRITICAL
+FirmwareManagerView,⚠ UI Only,Simulated,ExecuteCommandAsync('mem spiffs load'),Minor - Depends on MainViewModel,0,WARNING
+AntennaTuningView,✓ Fully Wired,Real,ExecuteCommandAsync('hf tune'); ExecuteCommandAsync('lf tune'),None,0,STABLE
+KeyDictionaryView,⚠ Partially Wired,Simulated,None,CRITICAL - Import/export not implemented,0,CRITICAL
+ChallengeResponseView,✓ Mostly Wired,Real,File I/O (JSON/CSV),Minor - Auto-capture TODO,2,STABLE
+ProtocolAnalyzerView,⚠ Partially Wired,Simulated,None,Minor - Filter highlighting TODO,1,WARNING
+PowerManagementView,✓ Fully Wired,Simulated,ExecuteCommandAsync('hw status'); ExecuteCommandAsync('pref'),Minor - Graph TODO,1,WARNING
+StandaloneModeView,⚠ UI Only,Configuration,None,CRITICAL - Config upload TODO,2,CRITICAL
+CardEmulationView,✓ Mostly Wired,Simulated,None,Minor - No persistence,0,WARNING
+MagicCardView,✓ Fully Wired,Real,ExecuteCommandAsync('hf mf csetuid'); ExecuteCommandAsync('hf mf info'),None,0,STABLE
+ReaderWriterView,✓ Fully Wired,Real,ExecuteCommandAsync('hf mf rdbl'); ExecuteCommandAsync('hf mf wrbl'),None,0,STABLE
+KeyRecoveryView,✓ Fully Wired,Real,ExecuteCommandAsync('hf mf hardnested'); ExecuteCommandAsync('hf mf staticnested'),None,0,STABLE
+DataConversionView,✓ Fully Wired,Partial,File I/O,CRITICAL - Conversion logic TODO (just copies),1,CRITICAL
+AttackSchedulerView,✓ Mostly Wired,Simulated,None,Minor - Job execution not implemented,0,WARNING
+TagComparisonView,✓ Fully Wired,Real,File I/O,None,0,STABLE
+FirmwareRecoveryView,✓ Fully Wired,Real,ConnectAsync('COM9'),None,0,STABLE
+AntennaDiagnosticsView,✓ Fully Wired,Real,ExecuteCommandAsync('hf tune'); ExecuteCommandAsync('lf tune'),None,0,STABLE
+MultiTagSimulatorView,✗ No Implementation,Empty,None,CRITICAL - Entire view is empty,0,CRITICAL

@@ -1,0 +1,185 @@
+<UserControl x:Class="Proxmark3GUI.Views.AntennaTuningView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="900" d:DesignWidth="900"
+             Background="{StaticResource BgDark}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel>
+
+            <!-- Panel Title -->
+            <TextBlock Text="&#x1F4E1; Antenna Tuning" Style="{StaticResource PanelTitle}"/>
+            <TextBlock Text="Measure and optimize antenna performance for HF and LF frequencies"
+                       Style="{StaticResource PanelSubtitle}"/>
+
+            <!-- Control Buttons -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                <Button x:Name="BtnStart" Content="&#x25B6; Start Measurement" Style="{StaticResource AccentButton}"
+                        Padding="16,10" Margin="0,0,8,0" Click="BtnStart_Click"/>
+                <Button x:Name="BtnStop" Content="&#x23F9; Stop" Style="{StaticResource FlatButton}"
+                        Padding="16,10" Margin="0,0,8,0" Click="BtnStop_Click"/>
+                <Button x:Name="BtnAutoTune" Content="&#x1F3AF; Auto-Tune" Style="{StaticResource FlatButton}"
+                        Padding="16,10" Margin="0,0,0,0" Click="BtnAutoTune_Click"/>
+            </StackPanel>
+
+            <!-- HF Section -->
+            <TextBlock Text="HF ANTENNA (13.56 MHz)" Style="{StaticResource SectionLabel}"/>
+            <Border Background="{StaticResource BgMedium}" CornerRadius="8" Padding="20" Margin="0,0,0,16">
+                <StackPanel>
+                    <!-- Voltage Bar -->
+                    <TextBlock Text="Voltage" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,6"/>
+                    <Border Background="{StaticResource BgDark}" CornerRadius="4" Height="32" Margin="0,0,0,10">
+                        <Grid>
+                            <!-- Gradient fill bar -->
+                            <Rectangle x:Name="HfVoltageBar" HorizontalAlignment="Left" Width="0" RadiusX="4" RadiusY="4">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Offset="0" Color="#22c55e"/>
+                                        <GradientStop Offset="0.5" Color="#eab308"/>
+                                        <GradientStop Offset="1" Color="#ef4444"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <!-- Scale markers -->
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
+                                <TextBlock Text="0V" Foreground="{StaticResource TextDim}" FontSize="9" Margin="0,0,40,0"/>
+                                <TextBlock Text="20V" Foreground="{StaticResource TextDim}" FontSize="9" Margin="0,0,40,0"/>
+                                <TextBlock Text="40V" Foreground="{StaticResource TextDim}" FontSize="9" Margin="0,0,40,0"/>
+                                <TextBlock Text="60V" Foreground="{StaticResource TextDim}" FontSize="9" Margin="0,0,40,0"/>
+                                <TextBlock Text="80V" Foreground="{StaticResource TextDim}" FontSize="9" Margin="0,0,40,0"/>
+                                <TextBlock Text="100V" Foreground="{StaticResource TextDim}" FontSize="9"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <!-- HF Stats -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                            <TextBlock Text="Frequency" Foreground="{StaticResource TextDim}" FontSize="11" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtHfFreq" Text="13.56 MHz" Foreground="{StaticResource TextPrimary}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                            <TextBlock Text="Peak Voltage" Foreground="{StaticResource TextDim}" FontSize="11" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtHfPeakV" Text="24.5 V" Foreground="{StaticResource AccentGreen}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                            <TextBlock Text="Status" Foreground="{StaticResource TextDim}" FontSize="11" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtHfStatus" Text="--" Foreground="{StaticResource TextSecondary}" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- LF Section -->
+            <TextBlock Text="LF ANTENNA (125 kHz)" Style="{StaticResource SectionLabel}"/>
+            <Border Background="{StaticResource BgMedium}" CornerRadius="8" Padding="20" Margin="0,0,0,16">
+                <StackPanel>
+                    <!-- Voltage Bar -->
+                    <TextBlock Text="Voltage" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,6"/>
+                    <Border Background="{StaticResource BgDark}" CornerRadius="4" Height="32" Margin="0,0,0,10">
+                        <Grid>
+                            <Rectangle x:Name="LfVoltageBar" HorizontalAlignment="Left" Width="0" RadiusX="4" RadiusY="4">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Offset="0" Color="#22c55e"/>
+                                        <GradientStop Offset="0.5" Color="#eab308"/>
+                                        <GradientStop Offset="1" Color="#ef4444"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
+                                <TextBlock Text="0V" Foreground="{StaticResource TextDim}" FontSize="9" Margin="0,0,40,0"/>
+                                <TextBlock Text="20V" Foreground="{StaticResource TextDim}" FontSize="9" Margin="0,0,40,0"/>
+                                <TextBlock Text="40V" Foreground="{StaticResource TextDim}" FontSize="9" Margin="0,0,40,0"/>
+                                <TextBlock Text="60V" Foreground="{StaticResource TextDim}" FontSize="9" Margin="0,0,40,0"/>
+                                <TextBlock Text="80V" Foreground="{StaticResource TextDim}" FontSize="9" Margin="0,0,40,0"/>
+                                <TextBlock Text="100V" Foreground="{StaticResource TextDim}" FontSize="9"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <!-- LF Stats -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                            <TextBlock Text="Frequency" Foreground="{StaticResource TextDim}" FontSize="11" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtLfFreq" Text="125.00 kHz" Foreground="{StaticResource TextPrimary}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                            <TextBlock Text="Peak Voltage" Foreground="{StaticResource TextDim}" FontSize="11" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtLfPeakV" Text="18.2 V" Foreground="{StaticResource AccentGreen}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                            <TextBlock Text="Status" Foreground="{StaticResource TextDim}" FontSize="11" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtLfStatus" Text="--" Foreground="{StaticResource TextSecondary}" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Impedance & Q Factor -->
+            <TextBlock Text="ANTENNA CHARACTERISTICS" Style="{StaticResource SectionLabel}"/>
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Resistance -->
+                <Border Grid.Column="0" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="16" Margin="0,0,8,0">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="Resistance (R)" Foreground="{StaticResource TextDim}" FontSize="11" HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="TxtResistance" Text="12.5 \u03A9" Foreground="{StaticResource AccentBlue}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                        <TextBlock Text="Ohms" Foreground="{StaticResource TextDim}" FontSize="10" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Reactance -->
+                <Border Grid.Column="1" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="16" Margin="0,0,8,0">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="Reactance (X)" Foreground="{StaticResource TextDim}" FontSize="11" HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="TxtReactance" Text="87.3 \u03A9" Foreground="{StaticResource AccentSecondary}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                        <TextBlock Text="Ohms" Foreground="{StaticResource TextDim}" FontSize="10" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Q Factor -->
+                <Border Grid.Column="2" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="16">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="Q Factor" Foreground="{StaticResource TextDim}" FontSize="11" HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="TxtQFactor" Text="7.0" Foreground="{StaticResource AccentGreen}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                        <TextBlock x:Name="TxtQRating" Text="Good" Foreground="{StaticResource AccentGreen}" FontSize="10" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Recommendations -->
+            <TextBlock Text="TUNING RECOMMENDATIONS" Style="{StaticResource SectionLabel}"/>
+            <Border Background="{StaticResource BgMedium}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+                <TextBox x:Name="TxtRecommendations" Style="{StaticResource DarkTextBox}"
+                         Height="100" IsReadOnly="True" VerticalScrollBarVisibility="Auto"
+                         AcceptsReturn="True" TextWrapping="Wrap"
+                         Text="Start a measurement to receive tuning recommendations.&#x0a;&#x0a;The auto-tune feature will attempt to find optimal antenna parameters automatically."/>
+            </Border>
+
+            <Border Background="{StaticResource BgMedium}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Live Tuning Log" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,8"/>
+                    <TextBox x:Name="TxtTuningLog" Style="{StaticResource DarkTextBox}" Height="160" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

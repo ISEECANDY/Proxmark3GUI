@@ -1,0 +1,358 @@
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using Proxmark3GUI.Models;
+
+namespace Proxmark3GUI.Services;
+
+public sealed class Pm3ConnectionService : IDisposable
+{
+    private static readonly Lazy<Pm3ConnectionService> _instance = new(() => new Pm3ConnectionService());
+    private static readonly Regex AnsiRegex = new(@"\x1B\[[0-?]*[ -/]*[@-~]", RegexOptions.Compiled);
+
+    public static Pm3ConnectionService Instance => _instance.Value;
+
+    public string PortName { get; set; } = "COM9";
+    public int BaudRate { get; set; } = 460800;
+    public string Pm3ExePath { get; set; } = Path.Combine(AppContext.BaseDirectory, "client", "proxmark3.exe");
+    public bool IsConnected => _process is { HasExited: false };
+
+    public event EventHandler<string>? OutputReceived;
+    public event EventHandler<string>? ErrorReceived;
+    public event EventHandler<bool>? ConnectionChanged;
+
+    private readonly object _sync = new();
+    private Process? _process;
+    private StringBuilder? _activeCommandOutput;
+    private TaskCompletionSource<string>? _activeCommandCompletion;
+    private Timer? _commandIdleTimer;
+    private bool _disposed;
+
+    private const int CommandIdleMs = 900;
+    private const int CommandTimeoutMs = 45_000;
+
+    private Pm3ConnectionService() { }
+
+    public Task ConnectAsync(string? portName = null)
+    {
+        lock (_sync)
+        {
+            ThrowIfDisposed();
+
+            if (!string.IsNullOrWhiteSpace(portName))
+                PortName = portName;
+
+            if (string.IsNullOrWhiteSpace(PortName))
+                PortName = "COM9";
+
+            if (IsConnected)
+                return Task.CompletedTask;
+
+            ResolveLaunchTarget(out var clientExe, out var workingDir);
+            Pm3ExePath = clientExe;
+
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = clientExe,
+                Arguments = $"-p {QuoteArg(PortName)} -b {BaudRate} -f",
+                WorkingDirectory = workingDir,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                StandardOutputEncoding = Encoding.UTF8,
+                StandardErrorEncoding = Encoding.UTF8,
+            };
+            startInfo.EnvironmentVariables["PATH"] = BuildMsysPath(workingDir);
+
+            _process = new Process
+            {
+                StartInfo = startInfo,
+                EnableRaisingEvents = true,
+            };
+            _process.OutputDataReceived += OnOutputDataReceived;
+            _process.ErrorDataReceived += OnErrorDataReceived;
+            _process.Exited += (_, _) => ConnectionChanged?.Invoke(this, false);
+
+            if (!_process.Start())
+                throw new InvalidOperationException("Failed to start proxmark3 client.");
+
+            _process.BeginOutputReadLine();
+            _process.BeginErrorReadLine();
+        }
+
+        ConnectionChanged?.Invoke(this, true);
+        return Task.CompletedTask;
+    }
+
+    public void Disconnect()
+    {
+        Process? process;
+        lock (_sync)
+        {
+            process = _process;
+            _process = null;
+            CompleteActiveCommand(string.Empty);
+        }
+
+        if (process is null)
+            return;
+
+        try
+        {
+            if (!process.HasExited)
+            {
+                try
+                {
+                    process.StandardInput.WriteLine("exit");
+                    process.StandardInput.Flush();
+                }
+                catch
+                {
+                    // Shutdown path; the process may already be closing.
+                }
+
+                if (!process.WaitForExit(1500))
+                    process.Kill(entireProcessTree: true);
+            }
+        }
+        finally
+        {
+            process.Dispose();
+            ConnectionChanged?.Invoke(this, false);
+        }
+    }
+
+    public async Task<string> SendCommandAsync(string command)
+    {
+        return await SendCommandRawAsync(command, CancellationToken.None);
+    }
+
+    public async Task<string> SendCommandRawAsync(string command, CancellationToken ct)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(command);
+
+        Process process;
+        TaskCompletionSource<string> completion;
+
+        lock (_sync)
+        {
+            ThrowIfDisposed();
+
+            if (_process is null || _process.HasExited)
+                throw new InvalidOperationException("Not connected to Proxmark3.");
+
+            if (_activeCommandCompletion is not null)
+                throw new InvalidOperationException("A Proxmark3 command is already running.");
+
+            process = _process;
+            _activeCommandOutput = new StringBuilder();
+            _activeCommandCompletion = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+            completion = _activeCommandCompletion;
+
+            process.StandardInput.WriteLine(command);
+            process.StandardInput.Flush();
+            ResetCommandIdleTimer();
+        }
+
+        using var timeoutCts = new CancellationTokenSource(CommandTimeoutMs);
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCts.Token);
+        using var registration = linkedCts.Token.Register(() => CompleteActiveCommand());
+
+        return await completion.Task;
+    }
+
+    public Task<string> SendCustomCommandAsync(string cmd) => SendCommandAsync(cmd);
+
+    public async Task<Pm3DeviceInfo> GetDeviceInfoAsync()
+    {
+        var raw = string.Join(Environment.NewLine, await SendCommandAsync("hw version"), await SendCommandAsync("hw status"));
+        return ParseDeviceInfo(raw);
+    }
+
+    private void OnOutputDataReceived(object sender, DataReceivedEventArgs e)
+    {
+        HandleClientLine(e.Data, OutputReceived);
+    }
+
+    private void OnErrorDataReceived(object sender, DataReceivedEventArgs e)
+    {
+        HandleClientLine(e.Data, ErrorReceived);
+    }
+
+    private void HandleClientLine(string? rawLine, EventHandler<string>? eventHandler)
+    {
+        if (string.IsNullOrWhiteSpace(rawLine))
+            return;
+
+        var line = AnsiRegex.Replace(rawLine, string.Empty).TrimEnd();
+        if (string.IsNullOrWhiteSpace(line))
+            return;
+
+        eventHandler?.Invoke(this, line);
+
+        lock (_sync)
+        {
+            if (_activeCommandOutput is not null)
+            {
+                _activeCommandOutput.AppendLine(line);
+                ResetCommandIdleTimer();
+
+            }
+        }
+    }
+
+    private void ResetCommandIdleTimer()
+    {
+        _commandIdleTimer ??= new Timer(_ => CompleteActiveCommand(), null, Timeout.Infinite, Timeout.Infinite);
+        _commandIdleTimer.Change(CommandIdleMs, Timeout.Infinite);
+    }
+
+    private void CompleteActiveCommand(string? forcedOutput = null)
+    {
+        TaskCompletionSource<string>? completion;
+        string output;
+
+        lock (_sync)
+        {
+            completion = _activeCommandCompletion;
+            if (completion is null)
+                return;
+
+            output = forcedOutput ?? _activeCommandOutput?.ToString().TrimEnd() ?? string.Empty;
+            _activeCommandCompletion = null;
+            _activeCommandOutput = null;
+            _commandIdleTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+        }
+
+        completion.TrySetResult(output);
+    }
+
+    private static Pm3DeviceInfo ParseDeviceInfo(string raw)
+    {
+        var info = new Pm3DeviceInfo { IsConnected = true };
+
+        foreach (var rawLine in raw.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
+        {
+            var line = rawLine.Trim().Trim('[', '+', ']', ' ');
+            if (string.IsNullOrWhiteSpace(line))
+                continue;
+
+            var parts = SplitDeviceInfoKeyValue(line);
+            if (parts.Length < 2)
+                continue;
+
+            var key = parts[0].Trim();
+            var value = parts[1].Trim();
+
+            if (key.Contains("firmware", StringComparison.OrdinalIgnoreCase))
+                info.FirmwareVersion = value;
+            else if (key.Contains("platform", StringComparison.OrdinalIgnoreCase) || key.Contains("hardware", StringComparison.OrdinalIgnoreCase))
+                info.HardwareVersion = value;
+            else if (key.Contains("unique", StringComparison.OrdinalIgnoreCase) || key.Equals("uid", StringComparison.OrdinalIgnoreCase))
+                info.Pm3Uid = value;
+            else if (key.Contains("fpga", StringComparison.OrdinalIgnoreCase) && info.FpgaVersion.Length == 0)
+                info.FpgaVersion = value;
+            else if (key.Contains("flash", StringComparison.OrdinalIgnoreCase))
+                info.FlashSize = value;
+            else if (key.Contains("serial", StringComparison.OrdinalIgnoreCase))
+                info.SerialNumber = value;
+            else if (key.Contains("bootloader", StringComparison.OrdinalIgnoreCase))
+                info.BootloaderVersion = value;
+            else if (key.Contains("battery", StringComparison.OrdinalIgnoreCase))
+                info.BatteryVoltage = value;
+            else if (key.Contains("usb", StringComparison.OrdinalIgnoreCase))
+                info.UsbVoltage = value;
+            else if (key.Contains("field", StringComparison.OrdinalIgnoreCase))
+                info.FieldVoltage = value;
+            else if (key.Contains("hf", StringComparison.OrdinalIgnoreCase) && key.Contains("peak", StringComparison.OrdinalIgnoreCase))
+                info.HfPeakV = value;
+            else if (key.Contains("hf", StringComparison.OrdinalIgnoreCase) && key.Contains("freq", StringComparison.OrdinalIgnoreCase))
+                info.HfFreq = value;
+            else if (key.Contains("lf", StringComparison.OrdinalIgnoreCase) && key.Contains("peak", StringComparison.OrdinalIgnoreCase))
+                info.LfPeakV = value;
+            else if (key.Contains("lf", StringComparison.OrdinalIgnoreCase) && key.Contains("freq", StringComparison.OrdinalIgnoreCase))
+                info.LfFreq = value;
+            else if (key.Contains("mode", StringComparison.OrdinalIgnoreCase) && value.Contains(".ncd", StringComparison.OrdinalIgnoreCase) && info.FpgaVersion.Length == 0)
+                info.FpgaVersion = value;
+            else if (key.Contains(".ncd", StringComparison.OrdinalIgnoreCase) && info.FpgaVersion.Length == 0)
+                info.FpgaVersion = line;
+        }
+
+        return info;
+    }
+
+    private static string[] SplitDeviceInfoKeyValue(string line)
+    {
+        var colonIdx = line.IndexOf(':');
+        if (colonIdx >= 0)
+            return new[] { line[..colonIdx], line[(colonIdx + 1)..] };
+
+        var equalsIdx = line.IndexOf('=');
+        if (equalsIdx >= 0)
+            return new[] { line[..equalsIdx], line[(equalsIdx + 1)..] };
+
+        var match = System.Text.RegularExpressions.Regex.Match(line, @"^(.*?)\.{{2,}}\s*(.+)$");
+        if (match.Success)
+            return new[] { match.Groups[1].Value, match.Groups[2].Value };
+
+        match = System.Text.RegularExpressions.Regex.Match(line, @"^(.+?)\s{2,}(.+)$");
+        if (match.Success)
+            return new[] { match.Groups[1].Value, match.Groups[2].Value };
+
+        return Array.Empty<string>();
+    }
+
+    private static void ResolveLaunchTarget(out string clientExe, out string workingDir)
+    {
+        var candidates = new[]
+        {
+            Path.Combine(AppContext.BaseDirectory, "client", "proxmark3.exe"),
+            Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "client", "proxmark3.exe")),
+            Path.Combine(Environment.CurrentDirectory, "client", "proxmark3.exe"),
+        };
+
+        clientExe = candidates.FirstOrDefault(File.Exists)
+            ?? throw new FileNotFoundException("Could not find client\\proxmark3.exe.");
+        workingDir = Path.GetDirectoryName(clientExe) ?? Environment.CurrentDirectory;
+    }
+
+    private static string BuildMsysPath(string clientDir)
+    {
+        var dirs = new[]
+        {
+            clientDir,
+            @"C:\ProxSpace\msys2\mingw64\bin",
+            @"C:\ProxSpace\msys2\usr\bin",
+            @"C:\msys64\mingw64\bin",
+            @"C:\msys64\usr\bin",
+            @"C:\msys64\ucrt64\bin",
+        }.Where(Directory.Exists);
+
+        return string.Join(Path.PathSeparator, dirs.Concat(new[] { Environment.GetEnvironmentVariable("PATH") ?? string.Empty }));
+    }
+
+    private static string QuoteArg(string arg) => $"\"{arg.Replace("\"", "\\\"")}\"";
+
+    private void ThrowIfDisposed()
+    {
+        if (_disposed)
+            throw new ObjectDisposedException(nameof(Pm3ConnectionService));
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+            return;
+
+        _disposed = true;
+        Disconnect();
+        _commandIdleTimer?.Dispose();
+        GC.SuppressFinalize(this);
+    }
+}

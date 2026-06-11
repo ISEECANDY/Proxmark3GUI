@@ -1,0 +1,234 @@
+<UserControl x:Class="Proxmark3GUI.Views.CommandsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="800" d:DesignWidth="900"
+             Background="{StaticResource BgDark}">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="1.5*"/>
+            <ColumnDefinition Width="1.2*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Panel Title -->
+        <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Margin="0,0,0,4">
+            <TextBlock Text="&#x1F4CB; Commands" Style="{StaticResource PanelTitle}"/>
+            <TextBlock Text="Browse and execute proxmark3 commands"
+                       Style="{StaticResource PanelSubtitle}"/>
+        </StackPanel>
+
+        <!-- Search Bar -->
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,0,0,12" VerticalAlignment="Center">
+            <TextBlock Text="Search Commands:" Foreground="{StaticResource TextSecondary}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBox x:Name="TxtSearch" Style="{StaticResource DarkTextBox}" Width="520" Padding="10,8"
+                     TextChanged="TxtSearch_TextChanged"/>
+        </StackPanel>
+
+        <!-- Command ListView -->
+        <Border Grid.Row="2" Grid.Column="0" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="12" Margin="0,0,12,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="All Commands" Foreground="{StaticResource AccentSecondary}" FontSize="14" FontWeight="Bold" Margin="0,0,0,8"/>
+                        <TextBlock Text="Showing every command grouped by category and subcategory for easy navigation." Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,12"/>
+                    </StackPanel>
+                    <Button x:Name="BtnToggleCommandGroups" Content="Collapse all" Click="ToggleCommandGroups_Click"
+                            Style="{StaticResource FlatButton}" Padding="10,8" Margin="0,0,0,12" Grid.Column="1" VerticalAlignment="Top" ToolTip="Collapse all command groups"/>
+                </Grid>
+                <ListView x:Name="LstCommands" Grid.Row="1" Style="{StaticResource DarkListView}"
+                          SelectionChanged="LstCommands_SelectionChanged" Margin="0"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          VirtualizingStackPanel.IsVirtualizing="False">
+                    <ListView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.ContainerStyle>
+                                <Style TargetType="GroupItem">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="GroupItem">
+                                                <Expander IsExpanded="True">
+                                                    <Expander.Header>
+                                                        <TextBlock Text="{Binding Name}" Foreground="{StaticResource AccentSecondary}"
+                                                                   FontSize="14" FontWeight="Bold" Margin="0,10,0,4"/>
+                                                    </Expander.Header>
+                                                    <ItemsPresenter />
+                                                </Expander>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </GroupStyle.ContainerStyle>
+                        </GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.ContainerStyle>
+                                <Style TargetType="GroupItem">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="GroupItem">
+                                                <Expander IsExpanded="True" Margin="16,0,0,0">
+                                                    <Expander.Header>
+                                                        <TextBlock Text="{Binding Name}" Foreground="{StaticResource TextPrimary}"
+                                                                   FontSize="12" FontWeight="SemiBold" Margin="0,8,0,4"/>
+                                                    </Expander.Header>
+                                                    <ItemsPresenter />
+                                                </Expander>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </GroupStyle.ContainerStyle>
+                            <GroupStyle.Panel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Margin="16,0,0,0"/>
+                                </ItemsPanelTemplate>
+                            </GroupStyle.Panel>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource BgDark}" BorderBrush="{StaticResource BorderLight}"
+                                    BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Command}" Foreground="{StaticResource AccentSecondary}"
+                                                   FontWeight="SemiBold" FontSize="13"/>
+                                        <TextBlock Text="{Binding Description}" Foreground="{StaticResource TextSecondary}"
+                                                   FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top">
+                                        <TextBlock Text="{Binding IsOffline}" Foreground="{StaticResource TextDim}"
+                                                   FontSize="11" HorizontalAlignment="Right"/>
+                                        <TextBlock Text="{Binding SubCategory}" Foreground="{StaticResource TextDim}"
+                                                   FontSize="11" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </Border>
+
+        <!-- Category Legend -->
+        <Border Grid.Row="2" Grid.Column="1" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="14" Margin="0,0,12,0">
+            <Expander x:Name="LegendExpander" IsExpanded="True" Expanded="LegendExpander_Expanded" Collapsed="LegendExpander_Collapsed">
+                <Expander.Header>
+                    <DockPanel LastChildFill="False">
+                        <TextBlock Text="Category Legend" Foreground="{StaticResource AccentSecondary}" FontWeight="Bold" FontSize="14" DockPanel.Dock="Left" VerticalAlignment="Center"/>
+                        <Button x:Name="BtnLegendToggle" Content="▾" Click="LegendToggle_Click" Style="{StaticResource IconToggleButton}" DockPanel.Dock="Right" Margin="8,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Center" ToolTip="Collapse legend"/>
+                    </DockPanel>
+                </Expander.Header>
+                <Grid Margin="0,8,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Top categories and subcategories for this command list." Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,12" TextWrapping="Wrap" Grid.Row="0"/>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" MaxHeight="320">
+                        <ItemsControl x:Name="CategoryLegend" Margin="0,0,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border x:Name="LegendBorder" Background="Transparent" CornerRadius="4" Padding="4" Margin="0,0,0,6">
+                                        <TextBlock Text="{Binding DisplayText}" Foreground="{StaticResource TextPrimary}" FontSize="12" TextWrapping="Wrap"/>
+                                    </Border>
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                            <Setter TargetName="LegendBorder" Property="Background" Value="{StaticResource BgDark}"/>
+                                            <Setter TargetName="LegendBorder" Property="BorderBrush" Value="{StaticResource AccentSecondary}"/>
+                                            <Setter TargetName="LegendBorder" Property="BorderThickness" Value="1"/>
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Expander>
+        </Border>
+
+        <!-- Quick Wizards Panel -->
+        <Border Grid.Row="2" Grid.Column="2" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="14">
+            <StackPanel>
+                <TextBlock Text="Quick Wizards" Foreground="{StaticResource TextPrimary}" FontWeight="SemiBold"
+                           FontSize="14" Margin="0,0,0,12"/>
+                <Button Content="&#x1F4E2; Detect Card" Style="{StaticResource FlatButton}" Margin="0,0,0,8"
+                        Click="WizardDetectCard_Click" HorizontalContentAlignment="Left" Padding="10,10"/>
+                <Button Content="&#x1F4BE; Dump Mifare" Style="{StaticResource FlatButton}" Margin="0,0,0,8"
+                        Click="WizardDumpMifare_Click" HorizontalContentAlignment="Left" Padding="10,10"/>
+                <Button Content="&#x1F511; Crack Keys" Style="{StaticResource FlatButton}" Margin="0,0,0,8"
+                        Click="WizardCrackKeys_Click" HorizontalContentAlignment="Left" Padding="10,10"/>
+                <Button Content="&#x1F4CB; Clone Card" Style="{StaticResource FlatButton}" Margin="0,0,0,0"
+                        Click="WizardCloneCard_Click" HorizontalContentAlignment="Left" Padding="10,10"/>
+                <Separator Margin="0,12,0,12"/>
+                <Button Content="&#x2753; Copy Help" Style="{StaticResource FlatButton}" Margin="0,0,0,8"
+                        Click="CopySelectedHelp_Click" HorizontalContentAlignment="Left" Padding="10,10"/>
+                <Button Content="&#x21AA; Paste Into Console" Style="{StaticResource FlatButton}" Margin="0,0,0,0"
+                        Click="PasteSelectedCommand_Click" HorizontalContentAlignment="Left" Padding="10,10"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Command Detail Panel -->
+        <Border x:Name="DetailPanel" Grid.Row="3" Grid.ColumnSpan="3"
+                Background="{StaticResource BgMedium}" CornerRadius="8" Padding="16" Margin="0,12,0,0"
+                Visibility="Collapsed">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock x:Name="DetailName" Text="Command Name" Foreground="{StaticResource AccentSecondary}"
+                               FontSize="16" FontWeight="Bold" Margin="0,0,0,6"/>
+                    <TextBlock x:Name="DetailDescription" Text="Description goes here..."
+                               Foreground="{StaticResource TextPrimary}" FontSize="12" Margin="0,0,0,6"
+                               TextWrapping="Wrap"/>
+                    <TextBlock x:Name="DetailUsage" Text="Usage: command [options]"
+                               Foreground="{StaticResource TextDim}" FontFamily="Consolas" FontSize="11" Margin="0,0,0,6"/>
+                    <TextBlock Text="Options:" Foreground="{StaticResource TextSecondary}" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,2"/>
+                    <TextBlock x:Name="DetailOptions" Text="No options available"
+                               Foreground="{StaticResource TextDim}" FontFamily="Consolas" FontSize="11" Margin="0,0,0,6"/>
+                    <TextBlock Text="Notes:" Foreground="{StaticResource TextSecondary}" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,2"/>
+                    <TextBlock x:Name="DetailNotes" Text="No notes available"
+                               Foreground="{StaticResource TextDim}" FontSize="11" TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Top">
+                    <Button Content="&#x25B6; Execute" Style="{StaticResource AccentButton}"
+                            Padding="16,10" Margin="0,0,0,8" Click="ExecuteCommand_Click"/>
+                    <Button Content="&#x2398; Use Help" Style="{StaticResource FlatButton}"
+                            Padding="16,10" Click="CopySelectedHelp_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="4" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="12,8" Margin="0,12,0,0">
+            <TextBlock x:Name="TxtStatus" Text="Ready. Select a command to see details and execute." Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+        </Border>
+
+    </Grid>
+</UserControl>

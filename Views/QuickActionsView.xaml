@@ -1,0 +1,256 @@
+<UserControl x:Class="Proxmark3GUI.Views.QuickActionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="800" d:DesignWidth="900"
+             Background="{StaticResource BgDark}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel>
+
+            <!-- Panel Title -->
+            <TextBlock Text="&#x26A1; Quick Actions" Style="{StaticResource PanelTitle}"/>
+            <TextBlock Text="One-click access to common proxmark3 operations"
+                       Style="{StaticResource PanelSubtitle}"/>
+
+            <!-- Action Buttons Grid (2 columns x 4 rows) -->
+            <UniformGrid Columns="2" Margin="0,0,0,20">
+
+                <!-- Scan HF -->
+                <Border Background="{StaticResource BgLight}" CornerRadius="10" Padding="20" Margin="6"
+                        BorderBrush="{StaticResource AccentPrimary}" BorderThickness="1"
+                        Cursor="Hand" MouseLeftButtonUp="ActionScanHF_Click">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource BgHover}"/>
+                                    <Setter Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect BlurRadius="12" ShadowDepth="0"
+                                                              Color="#7c3aed" Opacity="0.4"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="&#x1F4E2;" FontSize="32" Margin="0,0,0,8"/>
+                        <TextBlock Text="Scan HF" Foreground="{StaticResource TextPrimary}" FontSize="18" FontWeight="Bold"/>
+                        <TextBlock Text="Search for high-frequency (13.56 MHz) tags" Foreground="{StaticResource TextSecondary}"
+                                   FontSize="12" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Scan LF -->
+                <Border Background="{StaticResource BgLight}" CornerRadius="10" Padding="20" Margin="6"
+                        BorderBrush="{StaticResource AccentPrimary}" BorderThickness="1"
+                        Cursor="Hand" MouseLeftButtonUp="ActionScanLF_Click">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource BgHover}"/>
+                                    <Setter Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect BlurRadius="12" ShadowDepth="0"
+                                                              Color="#7c3aed" Opacity="0.4"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="&#x1F4E1;" FontSize="32" Margin="0,0,0,8"/>
+                        <TextBlock Text="Scan LF" Foreground="{StaticResource TextPrimary}" FontSize="18" FontWeight="Bold"/>
+                        <TextBlock Text="Search for low-frequency (125 kHz) tags" Foreground="{StaticResource TextSecondary}"
+                                   FontSize="12" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Tune Antenna -->
+                <Border Background="{StaticResource BgLight}" CornerRadius="10" Padding="20" Margin="6"
+                        BorderBrush="{StaticResource AccentPrimary}" BorderThickness="1"
+                        Cursor="Hand" MouseLeftButtonUp="ActionTune_Click">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource BgHover}"/>
+                                    <Setter Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect BlurRadius="12" ShadowDepth="0"
+                                                              Color="#7c3aed" Opacity="0.4"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="&#x1F4CD;" FontSize="32" Margin="0,0,0,8"/>
+                        <TextBlock Text="Tune Antenna" Foreground="{StaticResource TextPrimary}" FontSize="18" FontWeight="Bold"/>
+                        <TextBlock Text="Measure HF antenna tuning and resonance" Foreground="{StaticResource TextSecondary}"
+                                   FontSize="12" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- AutoPwn -->
+                <Border Background="{StaticResource BgLight}" CornerRadius="10" Padding="20" Margin="6"
+                        BorderBrush="{StaticResource AccentPrimary}" BorderThickness="1"
+                        Cursor="Hand" MouseLeftButtonUp="ActionAutoPwn_Click">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource BgHover}"/>
+                                    <Setter Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect BlurRadius="12" ShadowDepth="0"
+                                                              Color="#7c3aed" Opacity="0.4"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="&#x1F511;" FontSize="32" Margin="0,0,0,8"/>
+                        <TextBlock Text="AutoPwn" Foreground="{StaticResource TextPrimary}" FontSize="18" FontWeight="Bold"/>
+                        <TextBlock Text="Auto-detect and crack Mifare Classic keys" Foreground="{StaticResource TextSecondary}"
+                                   FontSize="12" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Dump Card -->
+                <Border Background="{StaticResource BgLight}" CornerRadius="10" Padding="20" Margin="6"
+                        BorderBrush="{StaticResource AccentPrimary}" BorderThickness="1"
+                        Cursor="Hand" MouseLeftButtonUp="ActionDump_Click">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource BgHover}"/>
+                                    <Setter Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect BlurRadius="12" ShadowDepth="0"
+                                                              Color="#7c3aed" Opacity="0.4"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="&#x1F4BE;" FontSize="32" Margin="0,0,0,8"/>
+                        <TextBlock Text="Dump Card" Foreground="{StaticResource TextPrimary}" FontSize="18" FontWeight="Bold"/>
+                        <TextBlock Text="Dump all sectors of detected Mifare card" Foreground="{StaticResource TextSecondary}"
+                                   FontSize="12" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Sniff HF -->
+                <Border Background="{StaticResource BgLight}" CornerRadius="10" Padding="20" Margin="6"
+                        BorderBrush="{StaticResource AccentPrimary}" BorderThickness="1"
+                        Cursor="Hand" MouseLeftButtonUp="ActionSniffHF_Click">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource BgHover}"/>
+                                    <Setter Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect BlurRadius="12" ShadowDepth="0"
+                                                              Color="#7c3aed" Opacity="0.4"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="&#x1F4E3;" FontSize="32" Margin="0,0,0,8"/>
+                        <TextBlock Text="Sniff HF" Foreground="{StaticResource TextPrimary}" FontSize="18" FontWeight="Bold"/>
+                        <TextBlock Text="Sniff HF (13.56 MHz) communication traffic" Foreground="{StaticResource TextSecondary}"
+                                   FontSize="12" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Sniff LF -->
+                <Border Background="{StaticResource BgLight}" CornerRadius="10" Padding="20" Margin="6"
+                        BorderBrush="{StaticResource AccentPrimary}" BorderThickness="1"
+                        Cursor="Hand" MouseLeftButtonUp="ActionSniffLF_Click">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource BgHover}"/>
+                                    <Setter Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect BlurRadius="12" ShadowDepth="0"
+                                                              Color="#7c3aed" Opacity="0.4"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="&#x1F4E3;" FontSize="32" Margin="0,0,0,8"/>
+                        <TextBlock Text="Sniff LF" Foreground="{StaticResource TextPrimary}" FontSize="18" FontWeight="Bold"/>
+                        <TextBlock Text="Sniff LF (125 kHz) communication traffic" Foreground="{StaticResource TextSecondary}"
+                                   FontSize="12" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Device Info -->
+                <Border Background="{StaticResource BgLight}" CornerRadius="10" Padding="20" Margin="6"
+                        BorderBrush="{StaticResource AccentPrimary}" BorderThickness="1"
+                        Cursor="Hand" MouseLeftButtonUp="ActionDeviceInfo_Click">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource BgHover}"/>
+                                    <Setter Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect BlurRadius="12" ShadowDepth="0"
+                                                              Color="#7c3aed" Opacity="0.4"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="&#x1F4CA;" FontSize="32" Margin="0,0,0,8"/>
+                        <TextBlock Text="Device Info" Foreground="{StaticResource TextPrimary}" FontSize="18" FontWeight="Bold"/>
+                        <TextBlock Text="Query connected Proxmark3 hardware details" Foreground="{StaticResource TextSecondary}"
+                                   FontSize="12" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+            </UniformGrid>
+
+            <!-- Status Indicator -->
+            <Border Background="{StaticResource BgMedium}" CornerRadius="8" Padding="14">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="Last Action:" Foreground="{StaticResource TextSecondary}"
+                               FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock x:Name="TxtLastAction" Grid.Column="1" Text="No action performed yet"
+                               Foreground="{StaticResource TextPrimary}" FontSize="12" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

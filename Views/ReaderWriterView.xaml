@@ -1,0 +1,44 @@
+<UserControl x:Class="Proxmark3GUI.Views.ReaderWriterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgDark}">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="200"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,12">
+            <ComboBox x:Name="CmbOperation" Width="170" Margin="0,0,8,0">
+                <ComboBoxItem Content="Read Block" IsSelected="True"/>
+                <ComboBoxItem Content="Write Block"/>
+            </ComboBox>
+            <TextBox x:Name="TxtBlockNum" Width="80" Margin="0,0,8,0"/>
+            <ComboBox x:Name="CmbKeySource" Width="180" Margin="0,0,8,0">
+                <ComboBoxItem Content="Manual entry" IsSelected="True"/>
+                <ComboBoxItem Content="Default key A"/>
+            </ComboBox>
+            <ComboBox x:Name="CmbKeyType" Width="140" Margin="0,0,8,0">
+                <ComboBoxItem Content="Use A key" IsSelected="True"/>
+                <ComboBoxItem Content="Use B key"/>
+            </ComboBox>
+            <ComboBox x:Name="CmbSector" Width="140" Margin="0,0,12,0">
+                <ComboBoxItem Content="Sector 0" IsSelected="True"/>
+            </ComboBox>
+            <Button x:Name="BtnExecute" Content="Execute" Click="BtnExecute_Click" Style="{StaticResource AccentButton}" Padding="12,6" Margin="0,0,8,0"/>
+            <Button x:Name="BtnFillZeros" Content="Fill Zeros" Click="BtnFillZeros_Click" Style="{StaticResource DangerButton}" Padding="12,6"/>
+        </StackPanel>
+
+        <TextBox x:Name="TxtKey" Grid.Row="1" Height="28" Margin="0,0,0,12"/>
+        <TextBox x:Name="TxtData" Grid.Row="2" Height="90" Margin="0,0,0,12" TextWrapping="Wrap" AcceptsReturn="True"/>
+        <TextBlock x:Name="TxtStatus" Grid.Row="3" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,12"/>
+
+        <TextBlock x:Name="TxtResult" Grid.Row="4" Foreground="{StaticResource TextPrimary}" TextWrapping="Wrap"/>
+
+        <ListView x:Name="LvHistory" Grid.Row="5" Background="{StaticResource BgMedium}" Foreground="{StaticResource TextPrimary}" BorderThickness="0"/>
+    </Grid>
+</UserControl>

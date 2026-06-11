@@ -1,0 +1,196 @@
+<UserControl x:Class="Proxmark3GUI.Views.KeyRecoveryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="900" d:DesignWidth="950"
+             Background="{StaticResource BgDark}">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <TextBlock Grid.Row="0" Text="&#x1F50D; Key Recovery" Style="{StaticResource PanelTitle}"/>
+        <TextBlock Grid.Row="0" Text="Advanced key recovery attacks: Hardnested, StaticNested, iCLASS, and more"
+                   Style="{StaticResource PanelSubtitle}" Margin="0,28,0,0"/>
+
+        <!-- Attack Type Selection -->
+        <TextBlock Grid.Row="1" Text="ATTACK TYPE" Style="{StaticResource SectionLabel}"/>
+        <UniformGrid Grid.Row="2" Columns="3" Margin="0,0,0,12">
+            <Button x:Name="BtnAttackHardnested" Content="Hardnested" Style="{StaticResource FlatButton}"
+                    Padding="12,10" Margin="0,0,6,6" Click="BtnAttackType_Click" Tag="Hardnested"/>
+            <Button x:Name="BtnAttackStaticNested" Content="StaticNested" Style="{StaticResource FlatButton}"
+                    Padding="12,10" Margin="3,0,3,6" Click="BtnAttackType_Click" Tag="StaticNested"/>
+            <Button x:Name="BtnAttackLoclass" Content="iCLASS LOCLASS" Style="{StaticResource FlatButton}"
+                    Padding="12,10" Margin="6,0,0,6" Click="BtnAttackType_Click" Tag="Loclass"/>
+            <Button x:Name="BtnAttackLegRec" Content="iCLASS LegRec (24-bit)" Style="{StaticResource FlatButton}"
+                    Padding="12,10" Margin="0,0,6,0" Click="BtnAttackType_Click" Tag="LegRec"/>
+            <Button x:Name="BtnAttackLegBrute" Content="iCLASS LegBrute (40-bit)" Style="{StaticResource FlatButton}"
+                    Padding="12,10" Margin="3,0,3,0" Click="BtnAttackType_Click" Tag="LegBrute"/>
+            <Button x:Name="BtnAttackFm11" Content="FM11RF08S Backdoor" Style="{StaticResource FlatButton}"
+                    Padding="12,10" Margin="6,0,0,0" Click="BtnAttackType_Click" Tag="FM11"/>
+        </UniformGrid>
+
+        <!-- Attack Parameters -->
+        <GroupBox x:Name="ParamPanel" Grid.Row="3" Style="{StaticResource DarkGroupBox}" Header="Attack Parameters" Margin="0,0,0,12">
+            <StackPanel>
+                <!-- Hardnested Parameters -->
+            <Grid x:Name="ParamsHardnested" Visibility="Visible">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Block:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,8"/>
+                <TextBox x:Name="HnBlock" Grid.Row="0" Grid.Column="1" Style="{StaticResource DarkTextBox}" Width="80" Text="0" Margin="0,0,0,8"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Key Type:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,8"/>
+                <ComboBox x:Name="HnKeyType" Grid.Row="1" Grid.Column="1" Style="{StaticResource DarkComboBox}" Width="120" Margin="0,0,0,8">
+                    <ComboBoxItem Content="Key A" IsSelected="True"/>
+                    <ComboBoxItem Content="Key B"/>
+                </ComboBox>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="UID:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,8"/>
+                <TextBox x:Name="HnUid" Grid.Row="2" Grid.Column="1" Style="{StaticResource HexTextBox}" Width="180" Text="AABBCCDD" CharacterCasing="Upper" Margin="0,0,0,8"/>
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Known Key:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,0"/>
+                <TextBox x:Name="HnKnownKey" Grid.Row="3" Grid.Column="1" Style="{StaticResource HexTextBox}" Width="180" Text="FFFFFFFFFFFF" CharacterCasing="Upper"/>
+            </Grid>
+
+            <!-- StaticNested Parameters -->
+            <Grid x:Name="ParamsStaticNested" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Block:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,6"/>
+                <TextBox x:Name="SnBlock" Grid.Row="0" Grid.Column="1" Style="{StaticResource DarkTextBox}" Width="80" Text="0" Margin="0,0,0,6"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Key Type:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,6"/>
+                <ComboBox x:Name="SnKeyType" Grid.Row="1" Grid.Column="1" Style="{StaticResource DarkComboBox}" Width="120" Margin="0,0,0,6">
+                    <ComboBoxItem Content="Key A" IsSelected="True"/>
+                    <ComboBoxItem Content="Key B"/>
+                </ComboBox>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="NT:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,6"/>
+                <TextBox x:Name="SnNt" Grid.Row="2" Grid.Column="1" Style="{StaticResource HexTextBox}" Width="180" Text="00000000" CharacterCasing="Upper" Margin="0,0,0,6"/>
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="NR:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,6"/>
+                <TextBox x:Name="SnNr" Grid.Row="3" Grid.Column="1" Style="{StaticResource HexTextBox}" Width="180" Text="00000000" CharacterCasing="Upper" Margin="0,0,0,6"/>
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="AR:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,6"/>
+                <TextBox x:Name="SnAr" Grid.Row="4" Grid.Column="1" Style="{StaticResource HexTextBox}" Width="180" Text="00000000" CharacterCasing="Upper" Margin="0,0,0,6"/>
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="Known Key:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,6"/>
+                <TextBox x:Name="SnKnownKey" Grid.Row="5" Grid.Column="1" Style="{StaticResource HexTextBox}" Width="180" Text="FFFFFFFFFFFF" CharacterCasing="Upper" Margin="0,0,0,6"/>
+            </Grid>
+
+            <!-- iCLASS LOCLASS Parameters -->
+            <StackPanel x:Name="ParamsLoclass" Visibility="Collapsed">
+                <TextBlock Text="Bruteforce reader attack for iCLASS keys." Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,8"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Elite Class:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <CheckBox x:Name="LoclassElite" Content="Elite (AA1)" Style="{StaticResource DarkCheckBox}" VerticalAlignment="Center"/>
+                    <CheckBox x:Name="LoclassAa2" Content="Elite (AA2)" Style="{StaticResource DarkCheckBox}" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- iCLASS LegRec Parameters -->
+            <StackPanel x:Name="ParamsLegRec" Visibility="Collapsed">
+                <TextBlock Text="24-bit LEGIC credential recovery." Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,8"/>
+                <TextBlock Text="This attack recovers LEGIC key from 24-bit credential by replay attack." Foreground="{StaticResource TextDim}" FontSize="11" Margin="0,0,0,8"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Target UID:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <TextBox x:Name="LrUid" Style="{StaticResource HexTextBox}" Width="180" Text="AABBCCDD" CharacterCasing="Upper"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- iCLASS LegBrute Parameters -->
+            <StackPanel x:Name="ParamsLegBrute" Visibility="Collapsed">
+                <TextBlock Text="40-bit LEGIC bruteforce attack." Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,8"/>
+                <TextBlock Text="This performs a full 40-bit key bruteforce. May take significant time." Foreground="{StaticResource TextDim}" FontSize="11"/>
+            </StackPanel>
+
+            <!-- FM11RF08S Parameters -->
+            <StackPanel x:Name="ParamsFM11" Visibility="Collapsed">
+                <TextBlock Text="FM11RF08S Backdoor key recovery." Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,8"/>
+                <TextBlock Text="Attempts to recover the backdoor key from FM11RF08S Chinese magic cards." Foreground="{StaticResource TextDim}" FontSize="11"/>
+            </StackPanel>
+
+            <Button x:Name="BtnStart" Content="&#x25B6; Start Attack" Style="{StaticResource AccentButton}"
+                    Padding="16,8" Click="BtnStart_Click"/>
+            <Button x:Name="BtnStop" Content="&#x23F9; Stop" Style="{StaticResource DangerButton}"
+                    Padding="12,8" Margin="12,0,0,0" Click="BtnStop_Click" IsEnabled="False"/>
+            <ProgressBar x:Name="ProgressAttack" Width="300" Height="20" Margin="16,0,0,0" Value="0" Maximum="100"/>
+            <TextBlock x:Name="TxtProgress" Text="0%" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                       VerticalAlignment="Center" Margin="8,0,0,0"/>
+        </StackPanel>
+        </GroupBox>
+
+        <!-- Results & Log -->
+        <GroupBox Grid.Row="5" Style="{StaticResource DarkGroupBox}" Header="Results &amp; Log">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Found Keys -->
+                <Border Grid.Row="0" Background="{StaticResource BgDark}" CornerRadius="4" Padding="12,8" Margin="0,0,0,8">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Found Keys:" Foreground="{StaticResource TextSecondary}" FontSize="12" FontWeight="SemiBold"
+                                   VerticalAlignment="Center" Margin="0,0,12,0"/>
+                        <TextBlock x:Name="TxtFoundKeys" Text="No keys found yet" Foreground="{StaticResource TextDim}" FontSize="12"
+                                   VerticalAlignment="Center" FontFamily="Consolas"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Log Console -->
+                <TextBox Grid.Row="1" x:Name="TxtLog" Style="{StaticResource HexTextBox}" IsReadOnly="True"
+                         VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" AcceptsReturn="True"
+                         Text="Key recovery log output will appear here..."/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="6" Background="{StaticResource BgMedium}" CornerRadius="6" Padding="12,8" Margin="0,8,0,0">
+            <TextBlock x:Name="TxtStatus" Text="Ready. Select an attack type and configure parameters."
+                       Foreground="{StaticResource TextDim}" FontSize="12"/>
+        </Border>
+    </Grid>
+</UserControl>

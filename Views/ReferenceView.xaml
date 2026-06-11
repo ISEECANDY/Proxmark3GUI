@@ -1,0 +1,273 @@
+<UserControl x:Class="Proxmark3GUI.Views.ReferenceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="800" d:DesignWidth="900"
+             Background="{StaticResource BgDark}">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Panel Title -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,4">
+            <TextBlock Text="&#x1F4D6; Reference" Style="{StaticResource PanelTitle}"/>
+            <TextBlock Text="Technical documentation and protocol references"
+                       Style="{StaticResource PanelSubtitle}"/>
+        </StackPanel>
+
+        <!-- Tab Control -->
+        <TabControl Grid.Row="1">
+
+            <!-- MIFARE Classic Tab -->
+            <TabItem Header="MIFARE Classic">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="16">
+                    <StackPanel>
+
+                        <TextBlock Text="MIFARE Classic Memory Map" Foreground="{StaticResource AccentSecondary}"
+                                   FontSize="16" FontWeight="Bold" Margin="0,0,0,12"/>
+
+                        <!-- Memory Map Table -->
+                        <Border Background="{StaticResource BgMedium}" CornerRadius="6" Padding="2"
+                                Margin="0,0,0,20">
+                            <DataGrid x:Name="MifareMemoryMap" AutoGenerateColumns="False" IsReadOnly="True"
+                                      Background="Transparent" Foreground="{StaticResource TextPrimary}"
+                                      BorderThickness="0" RowBackground="{StaticResource BgDark}"
+                                      AlternatingRowBackground="{StaticResource BgMedium}" HeadersVisibility="Column"
+                                      GridLinesVisibility="Horizontal" FontSize="12">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Sector" Binding="{Binding Sector}" Width="60"/>
+                                    <DataGridTextColumn Header="Block 0" Binding="{Binding Block0}" Width="150"/>
+                                    <DataGridTextColumn Header="Block 1" Binding="{Binding Block1}" Width="150"/>
+                                    <DataGridTextColumn Header="Block 2" Binding="{Binding Block2}" Width="150"/>
+                                    <DataGridTextColumn Header="Block 3 (Sector Trailer)" Binding="{Binding Block3}" Width="200"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Border>
+
+                        <TextBlock Text="Key Types" Foreground="{StaticResource AccentSecondary}" FontSize="14"
+                                   FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" LineHeight="18" Margin="0,0,0,16">
+                            <Run Text="Key A" FontWeight="Bold" Foreground="{StaticResource AccentSecondary}"/>
+                            <Run Text=" - Used for reading data. Factory default: FFFFFFFFFFFF"/><LineBreak/>
+                            <Run Text="Key B" FontWeight="Bold" Foreground="{StaticResource AccentSecondary}"/>
+                            <Run Text=" - Used for writing data. Factory default: FFFFFFFFFFFF"/><LineBreak/>
+                            <Run Text="Access Bits" FontWeight="Bold" Foreground="{StaticResource AccentSecondary}"/>
+                            <Run Text=" - Define which operations are allowed with each key for each block."/>
+                        </TextBlock>
+
+                        <TextBlock Text="Common Commands" Foreground="{StaticResource AccentSecondary}" FontSize="14"
+                                   FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <Border Background="{StaticResource BgMedium}" CornerRadius="6" Padding="12" Margin="0,0,0,0">
+                            <StackPanel>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontFamily="Consolas" FontSize="12" Margin="0,0,0,6">hf mf info        - Card information and key status</TextBlock>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontFamily="Consolas" FontSize="12" Margin="0,0,0,6">hf mf dump       - Dump all sectors to file</TextBlock>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontFamily="Consolas" FontSize="12" Margin="0,0,0,6">hf mf rdbl       - Read a single block</TextBlock>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontFamily="Consolas" FontSize="12" Margin="0,0,0,6">hf mf wrbl       - Write a single block</TextBlock>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontFamily="Consolas" FontSize="12" Margin="0,0,0,6">hf mf chk        - Check keys against dictionary</TextBlock>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontFamily="Consolas" FontSize="12" Margin="0,0,0,6">hf mf autopwn    - Automated key cracking</TextBlock>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- HID Prox Tab -->
+            <TabItem Header="HID Prox">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="HID Card Formats" Foreground="{StaticResource AccentSecondary}"
+                                   FontSize="16" FontWeight="Bold" Margin="0,0,0,12"/>
+
+                        <Border Background="{StaticResource BgMedium}" CornerRadius="6" Padding="16" Margin="0,0,0,16">
+                            <StackPanel>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" Margin="0,0,0,12">
+                                    <Run FontWeight="Bold" Text="H10301"/> - 37-bit, 125 kHz ProxCard II (most common)<LineBreak/>
+                                    <Run FontWeight="Bold" Text="H10216"/> - 26-bit, 125 kHz ProxCard<LineBreak/>
+                                    <Run FontWeight="Bold" Text="H10302"/> - 37-bit, iCLASS<LineBreak/>
+                                    <Run FontWeight="Bold" Text="H10320"/> - 132-bit, 125 kHz
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="Wiegand Encoding" Foreground="{StaticResource AccentSecondary}" FontSize="14"
+                                   FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" LineHeight="18" TextWrapping="Wrap">
+                            Wiegand protocol uses two wires (Data 0 and Data 1) to transmit binary data.
+                            A standard 26-bit format consists of: 1 even parity bit, 24 data bits (8-bit facility code + 16-bit card number),
+                            and 1 odd parity bit. The Proxmark3 can decode and emulate Wiegand-format cards.
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- iCLASS Tab -->
+            <TabItem Header="iCLASS">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="iCLASS Overview" Foreground="{StaticResource AccentSecondary}"
+                                   FontSize="16" FontWeight="Bold" Margin="0,0,0,12"/>
+                        <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" LineHeight="18" Margin="0,0,0,16"
+                                   TextWrapping="Wrap">
+                            iCLASS is a high-frequency (13.56 MHz) technology by HID Global that combines
+                            contactless smart card features with legacy Prox technology. It supports advanced
+                            security features including AES encryption and diversified keys.
+                        </TextBlock>
+
+                        <TextBlock Text="Application Types" Foreground="{StaticResource AccentSecondary}" FontSize="14"
+                                   FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <Border Background="{StaticResource BgMedium}" CornerRadius="6" Padding="12">
+                            <StackPanel>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" Margin="0,0,0,6">&#x2022; Access Control (Buildings, Doors)</TextBlock>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" Margin="0,0,0,6">&#x2022; Biometric Applications</TextBlock>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" Margin="0,0,0,6">&#x2022; Cashless Payment</TextBlock>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" Margin="0,0,0,6">&#x2022; Logical Access (PC Login)</TextBlock>
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="Key Diversification" Foreground="{StaticResource AccentSecondary}" FontSize="14"
+                                   FontWeight="SemiBold" Margin="0,16,0,8"/>
+                        <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" LineHeight="18" TextWrapping="Wrap">
+                            iCLASS uses diversified keys where each card has a unique key derived from a master key
+                            and the card's configuration identifier. This prevents cloning even if one card's key is compromised.
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Data Formats Tab -->
+            <TabItem Header="Data Formats">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="Dump File Formats" Foreground="{StaticResource AccentSecondary}"
+                                   FontSize="16" FontWeight="Bold" Margin="0,0,0,12"/>
+
+                        <Border Background="{StaticResource BgMedium}" CornerRadius="6" Padding="16" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Foreground="{StaticResource AccentPrimary}" FontWeight="Bold" FontSize="13" Margin="0,0,0,4">.bin (Binary)</TextBlock>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" Margin="0,0,0,12" TextWrapping="Wrap">
+                                    Raw binary dump. 16 bytes per block, 64 bytes per sector. Exact copy of card memory.
+                                </TextBlock>
+
+                                <TextBlock Foreground="{StaticResource AccentPrimary}" FontWeight="Bold" FontSize="13" Margin="0,0,0,4">.eml (Emulator)</TextBlock>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" Margin="0,0,0,12" TextWrapping="Wrap">
+                                    Text-based format with one block per line. Each line contains 32 hex characters (16 bytes).
+                                    Compatible with mfoc/emulator tools.
+                                </TextBlock>
+
+                                <TextBlock Foreground="{StaticResource AccentPrimary}" FontWeight="Bold" FontSize="13" Margin="0,0,0,4">.json</TextBlock>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" Margin="0,0,0,12" TextWrapping="Wrap">
+                                    Structured JSON format with metadata including UID, keys per sector, and block data.
+                                    Used by pm3 client for export/import.
+                                </TextBlock>
+
+                                <TextBlock Foreground="{StaticResource AccentPrimary}" FontWeight="Bold" FontSize="13" Margin="0,0,0,4">.mfd (Mifare Dump)</TextBlock>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" TextWrapping="Wrap">
+                                    Mifare Classic dump format. Contains all 4096 bytes (1K) or 8192 bytes (4K) of card data.
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Quick Start Tab -->
+            <TabItem Header="Quick Start">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="Getting Started" Foreground="{StaticResource AccentSecondary}"
+                                   FontSize="16" FontWeight="Bold" Margin="0,0,0,16"/>
+
+                        <StackPanel Margin="0,0,0,12">
+                            <Border Background="{StaticResource BgMedium}" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="1" Foreground="{StaticResource AccentPrimary}" FontWeight="Bold"
+                                               FontSize="18" Width="28" VerticalAlignment="Center"/>
+                                    <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" VerticalAlignment="Center">
+                                        Connect your Proxmark3 device via USB
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{StaticResource BgMedium}" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="2" Foreground="{StaticResource AccentPrimary}" FontWeight="Bold"
+                                               FontSize="18" Width="28" VerticalAlignment="Center"/>
+                                    <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" VerticalAlignment="Center">
+                                        Select the serial port in Settings and connect
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{StaticResource BgMedium}" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="3" Foreground="{StaticResource AccentPrimary}" FontWeight="Bold"
+                                               FontSize="18" Width="28" VerticalAlignment="Center"/>
+                                    <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" VerticalAlignment="Center">
+                                        Place a tag near the antenna (HF or LF)
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{StaticResource BgMedium}" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="4" Foreground="{StaticResource AccentPrimary}" FontWeight="Bold"
+                                               FontSize="18" Width="28" VerticalAlignment="Center"/>
+                                    <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" VerticalAlignment="Center">
+                                        Use Quick Actions or Commands to interact with the tag
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{StaticResource BgMedium}" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="5" Foreground="{StaticResource AccentPrimary}" FontWeight="Bold"
+                                               FontSize="18" Width="28" VerticalAlignment="Center"/>
+                                    <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" VerticalAlignment="Center">
+                                        View results in the console output panel or Dump Explorer
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Bluetooth Tab -->
+            <TabItem Header="Bluetooth">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="Bluetooth (BLE) Support" Foreground="{StaticResource AccentSecondary}"
+                                   FontSize="16" FontWeight="Bold" Margin="0,0,0,12"/>
+                        <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" LineHeight="18" Margin="0,0,0,16"
+                                   TextWrapping="Wrap">
+                            Some Proxmark3 RDV4 models support Bluetooth Low Energy (BLE) connectivity
+                            via the BlueShark module. This allows wireless operation from the GUI.
+                        </TextBlock>
+
+                        <TextBlock Text="Setup Steps" Foreground="{StaticResource AccentSecondary}" FontSize="14"
+                                   FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <Border Background="{StaticResource BgMedium}" CornerRadius="6" Padding="12">
+                            <StackPanel>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" Margin="0,0,0,6">
+                                    1. Enable Bluetooth on your host computer
+                                </TextBlock>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" Margin="0,0,0,6">
+                                    2. Pair with the Proxmark3 BlueShark BLE device
+                                </TextBlock>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12" Margin="0,0,0,6">
+                                    3. Select the BLE serial port in Connection settings
+                                </TextBlock>
+                                <TextBlock Foreground="{StaticResource TextPrimary}" FontSize="12">
+                                    4. Connect as normal — BLE data transfers are slower than USB
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</UserControl>

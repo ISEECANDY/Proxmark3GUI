@@ -1,0 +1,130 @@
+<UserControl x:Class="Proxmark3GUI.Views.FirmwareManagerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="950" d:DesignWidth="900"
+             Background="{StaticResource BgDark}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel>
+
+            <!-- Panel Title -->
+            <TextBlock Text="&#x1F4E6; Firmware Manager" Style="{StaticResource PanelTitle}"/>
+            <TextBlock Text="Manage device firmware, flash updates, and backup configurations"
+                       Style="{StaticResource PanelSubtitle}"/>
+
+            <!-- Current Firmware Info -->
+            <TextBlock Text="CURRENT FIRMWARE" Style="{StaticResource SectionLabel}"/>
+            <GroupBox Style="{StaticResource DarkGroupBox}">
+                <Grid Margin="0,4,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Version:" Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,12,6"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" x:Name="TxtFwVersion" Text="4.0.0-314-gd8a2b5b" Foreground="{StaticResource TextPrimary}" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Build Date:" Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,12,6"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" x:Name="TxtBuildDate" Text="2024-01-15 14:23:00" Foreground="{StaticResource TextPrimary}" FontSize="12" Margin="0,0,0,6"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Checksum:" Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,12,6"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" x:Name="TxtChecksum" Text="0xA3F7E21C" Foreground="{StaticResource AccentCyan}" FontSize="12" FontFamily="Consolas" Margin="0,0,0,6"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Flash Date:" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" x:Name="TxtFlashDate" Text="2024-01-16" Foreground="{StaticResource TextPrimary}" FontSize="12"/>
+                </Grid>
+            </GroupBox>
+
+            <!-- Firmware Selection -->
+            <TextBlock Text="FIRMWARE SELECTION" Style="{StaticResource SectionLabel}"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <ComboBox x:Name="CmbFirmwareVersion" Style="{StaticResource DarkComboBox}" Width="360" Margin="0,0,12,0">
+                    <ComboBoxItem Content="4.0.0 (Latest Stable)" IsSelected="True"/>
+                    <ComboBoxItem Content="4.0.1-rc1 (Release Candidate)"/>
+                    <ComboBoxItem Content="3.1.0 (Previous Stable)"/>
+                    <ComboBoxItem Content="Custom firmware file..."/>
+                </ComboBox>
+                <TextBlock x:Name="TxtFwNotes" Text="Latest stable release with bug fixes"
+                           Foreground="{StaticResource TextDim}" FontSize="11" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Firmware File Path -->
+            <TextBlock Text="FIRMWARE FILE" Style="{StaticResource SectionLabel}"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <TextBox x:Name="TxtFwFilePath" Style="{StaticResource DarkTextBox}" Width="360"
+                         Text="C:\Firmware\pm3-fw-v4.0.0.bin" VerticalAlignment="Center"/>
+                <Button Content="Browse" Style="{StaticResource FlatButton}" Padding="10,6"
+                        Margin="8,0,0,0" Click="BtnBrowseFw_Click"/>
+            </StackPanel>
+
+            <!-- Flash Firmware -->
+            <TextBlock Text="FLASH OPERATION" Style="{StaticResource SectionLabel}"/>
+            <GroupBox Style="{StaticResource DarkGroupBox}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <Button x:Name="BtnFlash" Content="&#x26A1; Flash Firmware" Style="{StaticResource AccentButton}"
+                                Padding="20,10" Margin="0,0,8,0" Click="BtnFlash_Click"/>
+                        <TextBlock x:Name="TxtFlashStatus" Text="Ready to flash"
+                                   Foreground="{StaticResource TextDim}" FontSize="12" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Progress Bar -->
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ProgressBar x:Name="PbFlashProgress" Grid.Column="0" Height="10" Value="0" Maximum="100"/>
+                        <TextBlock x:Name="TxtFlashPercent" Grid.Column="1" Text="0%"
+                                   Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                    </Grid>
+
+                    <!-- Log Console -->
+                    <TextBox x:Name="TxtFlashLog" Style="{StaticResource DarkTextBox}" Height="120"
+                             FontFamily="Consolas" FontSize="11" IsReadOnly="True"
+                             VerticalScrollBarVisibility="Auto" AcceptsReturn="True"
+                             TextWrapping="Wrap" Text="Flash log output will appear here..."/>
+                    <Button Content="Clear Log" Style="{StaticResource FlatButton}" Padding="8,4"
+                            Margin="0,6,0,0" Click="BtnClearLog_Click"/>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- Backup / Restore -->
+            <TextBlock Text="BACKUP &amp; RESTORE" Style="{StaticResource SectionLabel}"/>
+            <GroupBox Style="{StaticResource DarkGroupBox}">
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="BtnBackup" Content="&#x1F4BE; Backup Current Firmware" Style="{StaticResource SuccessButton}"
+                            Padding="14,8" Margin="0,0,8,0" Click="BtnBackup_Click"/>
+                    <Button x:Name="BtnRestore" Content="&#x21A9; Restore from Backup" Style="{StaticResource FlatButton}"
+                            Padding="14,8" Margin="0,0,8,0" Click="BtnRestore_Click"/>
+                    <TextBlock x:Name="TxtBackupStatus" Text=""
+                               Foreground="{StaticResource TextDim}" FontSize="11" VerticalAlignment="Center"/>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- Recovery Mode -->
+            <TextBlock Text="RECOVERY MODE" Style="{StaticResource SectionLabel}"/>
+            <Border Background="{StaticResource BgMedium}" CornerRadius="6" Padding="16" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="To enter recovery mode:" Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,6"/>
+                    <TextBlock Text="1. Disconnect the Proxmark3 from USB" Foreground="{StaticResource TextDim}" FontSize="11" Margin="8,0,0,2"/>
+                    <TextBlock Text="2. Hold down the button on the device" Foreground="{StaticResource TextDim}" FontSize="11" Margin="8,0,0,2"/>
+                    <TextBlock Text="3. Reconnect USB while holding the button" Foreground="{StaticResource TextDim}" FontSize="11" Margin="8,0,0,2"/>
+                    <TextBlock Text="4. Release the button when LED blinks rapidly" Foreground="{StaticResource TextDim}" FontSize="11" Margin="8,0,0,8"/>
+                    <Button x:Name="BtnResetFactory" Content="&#x26A0; Reset to Factory Firmware" Style="{StaticResource DangerButton}"
+                            Padding="16,8" Click="BtnResetFactory_Click"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,276 @@
+<UserControl x:Class="Proxmark3GUI.Views.CardEmulationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="900" d:DesignWidth="950"
+             Background="{StaticResource BgDark}">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Panel Title -->
+        <TextBlock Grid.Row="0" Text="&#x1F4B3; Card Emulation" Style="{StaticResource PanelTitle}"/>
+        <TextBlock Grid.Row="0" Text="Create, edit, and manage card emulation profiles"
+                   Style="{StaticResource PanelSubtitle}" Margin="0,28,0,0"/>
+
+        <!-- Emulation Control Bar -->
+        <Border Grid.Row="1" Background="{StaticResource BgMedium}" CornerRadius="6" Padding="12" Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="BtnStartEmulation" Content="&#x25B6; Start Emulation" Style="{StaticResource SuccessButton}"
+                        Padding="16,8" Margin="0,0,8,0" Click="BtnStartEmulation_Click"/>
+                <Button x:Name="BtnStopEmulation" Content="&#x23F9; Stop Emulation" Style="{StaticResource DangerButton}"
+                        Padding="16,8" Margin="0,0,16,0" Click="BtnStopEmulation_Click" IsEnabled="False"/>
+                <Separator Width="1" Background="{StaticResource BorderLight}" Margin="0,4"/>
+                <StackPanel Orientation="Horizontal" Margin="16,0,0,0" VerticalAlignment="Center">
+                    <Ellipse x:Name="EmulationIndicator" Width="12" Height="12" Fill="{StaticResource TextDim}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="TxtEmulationStatus" Text="Stopped" Foreground="{StaticResource TextDim}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content: Profile List + Editor -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Profile List -->
+            <Border Grid.Column="0" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="4">
+                <StackPanel>
+                    <TextBlock Text="PROFILES" Foreground="{StaticResource TextDim}" FontSize="11" FontWeight="SemiBold"
+                               Margin="8,8,8,4"/>
+                    <Button x:Name="BtnNewProfile" Content="&#x2795; New Profile" Style="{StaticResource FlatButton}"
+                            Padding="8,4" Margin="4,0,4,4" Click="BtnNewProfile_Click"/>
+                    <Button x:Name="BtnDeleteProfile" Content="&#x1F5D1; Delete" Style="{StaticResource FlatButton}"
+                            Padding="8,4" Margin="4,0,4,4" Click="BtnDeleteProfile_Click"/>
+                    <ListView x:Name="LvProfiles" Style="{StaticResource DarkListView}" Margin="4,0,4,4"
+                              SelectionChanged="LvProfiles_SelectionChanged">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Profile Name" Width="240" DisplayMemberBinding="{Binding Name}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </StackPanel>
+            </Border>
+
+            <!-- Profile Editor -->
+            <Border Grid.Column="2" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="20">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="EditorPanel">
+
+                        <!-- Profile Name -->
+                        <TextBlock Text="PROFILE" Style="{StaticResource SectionLabel}"/>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Name:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                            <TextBox x:Name="TxtProfileName" Grid.Column="1" Style="{StaticResource DarkTextBox}" Text="New Profile"/>
+                        </Grid>
+
+                        <!-- Card Type -->
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Card Type:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                            <ComboBox x:Name="CmbCardType" Grid.Column="1" Style="{StaticResource DarkComboBox}" Width="250"
+                                      SelectionChanged="CmbCardType_SelectionChanged">
+                                <ComboBoxItem Content="MIFARE Classic" IsSelected="True"/>
+                                <ComboBoxItem Content="MIFARE Ultralight"/>
+                                <ComboBoxItem Content="iCLASS"/>
+                                <ComboBoxItem Content="HID Prox"/>
+                                <ComboBoxItem Content="Custom NDEF"/>
+                            </ComboBox>
+                        </Grid>
+
+                        <!-- MIFARE Classic Configuration -->
+                        <StackPanel x:Name="PanelMifareClassic">
+                            <TextBlock Text="MIFARE CLASSIC CONFIG" Style="{StaticResource SectionLabel}"/>
+                            <Grid Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="UID:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,6"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" x:Name="TxtMfUid" Style="{StaticResource HexTextBox}" Text="046ED63E" Margin="0,0,0,6"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="ATQA:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,6"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" x:Name="TxtMfAtqa" Style="{StaticResource HexTextBox}" Text="0004" Margin="0,0,0,6"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="SAK:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,6"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" x:Name="TxtMfSak" Style="{StaticResource HexTextBox}" Text="08" Margin="0,0,0,6"/>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="ATS:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <TextBox Grid.Row="3" Grid.Column="1" x:Name="TxtMfAts" Style="{StaticResource HexTextBox}" Text=""/>
+                            </Grid>
+
+                            <!-- Sector Key Config -->
+                            <TextBlock Text="SECTOR KEY CONFIGURATION" Style="{StaticResource SectionLabel}"/>
+                            <Border Background="{StaticResource BgDark}" CornerRadius="6" Padding="8" Margin="0,0,0,12">
+                                <ListView x:Name="LvSectorKeys" Style="{StaticResource DarkListView}" Height="200" FontSize="11">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Sector" Width="60" DisplayMemberBinding="{Binding Sector}"/>
+                                            <GridViewColumn Header="Key A" Width="180">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBox Style="{StaticResource HexTextBox}" Text="{Binding KeyA}" BorderThickness="0"
+                                                                 Background="Transparent" Foreground="{StaticResource AccentCyan}"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Key B" Width="180">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBox Style="{StaticResource HexTextBox}" Text="{Binding KeyB}" BorderThickness="0"
+                                                                 Background="Transparent" Foreground="{StaticResource AccentOrange}"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Access" Width="60" DisplayMemberBinding="{Binding AccessBits}"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Ultralight Configuration -->
+                        <StackPanel x:Name="PanelUltralight" Visibility="Collapsed">
+                            <TextBlock Text="ULTRALIGHT CONFIG" Style="{StaticResource SectionLabel}"/>
+                            <Grid Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="UID:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,6"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource HexTextBox}" Text="04A1B2C3" Margin="0,0,0,6"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="OTP:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,6"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource HexTextBox}" Text="00000000" Margin="0,0,0,6"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Lock Bytes:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,6"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource HexTextBox}" Text="0000" Margin="0,0,0,6"/>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Counter:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource DarkTextBox}" Text="0" Margin="0,0,0,0"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- iCLASS Configuration -->
+                        <StackPanel x:Name="PanelIclass" Visibility="Collapsed">
+                            <TextBlock Text="iCLASS CONFIG" Style="{StaticResource SectionLabel}"/>
+                            <Grid Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="CSN:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,6"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource HexTextBox}" Text="AABBCCDD" Margin="0,0,0,6"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Config Bytes:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource HexTextBox}" Text="0000000000000000"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- HID Prox Configuration -->
+                        <StackPanel x:Name="PanelHidProx" Visibility="Collapsed">
+                            <TextBlock Text="HID PROX CONFIG" Style="{StaticResource SectionLabel}"/>
+                            <Grid Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Format:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,6"/>
+                                <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource DarkComboBox}" Width="250" Margin="0,0,0,6">
+                                    <ComboBoxItem Content="HID 26-bit (Standard)" IsSelected="True"/>
+                                    <ComboBoxItem Content="HID 37-bit"/>
+                                    <ComboBoxItem Content="HID Corporate 1000"/>
+                                    <ComboBoxItem Content="Custom Format"/>
+                                </ComboBox>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Facility Code:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,6"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource DarkTextBox}" Text="100" Margin="0,0,0,6"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Card Number:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource DarkTextBox}" Text="12345"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Custom NDEF Configuration -->
+                        <StackPanel x:Name="PanelCustomNdef" Visibility="Collapsed">
+                            <TextBlock Text="CUSTOM NDEF CONFIG" Style="{StaticResource SectionLabel}"/>
+                            <Grid Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="UID:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Top" Margin="0,4,12,0"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource HexTextBox}" Text="04ABCDEF" Margin="0,0,0,6"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="NDEF Data:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Top" Margin="0,4,12,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource HexTextBox}" Height="80" AcceptsReturn="True"
+                                         VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"
+                                         Text="Enter NDEF message data in hex..."/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Save Button -->
+                        <Button x:Name="BtnSaveProfile" Content="&#x1F4BE; Save Profile" Style="{StaticResource AccentButton}"
+                                Padding="16,10" Click="BtnSaveProfile_Click"/>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="4" Background="{StaticResource BgMedium}" CornerRadius="6" Padding="12,8" Margin="0,8,0,0">
+            <TextBlock x:Name="TxtStatus" Text="Select or create a profile to begin."
+                       Foreground="{StaticResource TextDim}" FontSize="12"/>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,197 @@
+<UserControl x:Class="Proxmark3GUI.Views.FirmwareRecoveryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="900" d:DesignWidth="950"
+             Background="{StaticResource BgDark}">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <TextBlock Grid.Row="0" Text="&#x26A0; Firmware Recovery" Style="{StaticResource PanelTitle}"/>
+        <TextBlock Grid.Row="0" Text="Recover bricked or unresponsive Proxmark3 devices"
+                   Style="{StaticResource PanelSubtitle}" Margin="0,28,0,0"/>
+
+        <!-- Warning Banner -->
+        <Border Grid.Row="1" Background="#7f1d1d" CornerRadius="6" Padding="16,12" Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#x26A0; WARNING:" Foreground="{StaticResource AccentRed}" FontSize="14" FontWeight="Bold"
+                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock Text="Recovery operations may permanently modify device firmware. Ensure you have a backup before proceeding."
+                           Foreground="{StaticResource TextPrimary}" FontSize="12" VerticalAlignment="Center" TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Recovery Method Selection -->
+        <GroupBox Grid.Row="2" Style="{StaticResource DarkGroupBox}" Header="Recovery Method" Margin="0,0,0,12">
+            <UniformGrid Columns="4">
+                <Border x:Name="MethodJtag" Background="{StaticResource BgActive}" CornerRadius="6" Padding="12,10"
+                         Margin="0,0,6,0" Cursor="Hand" MouseLeftButtonUp="MethodJtag_Click">
+                    <StackPanel>
+                        <TextBlock Text="JTAG Recovery" Foreground="{StaticResource TextPrimary}" FontSize="13" FontWeight="Bold"/>
+                        <TextBlock Text="Requires JTAG adapter" Foreground="{StaticResource TextDim}" FontSize="10" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border x:Name="MethodUsb" Background="{StaticResource BgLight}" CornerRadius="6" Padding="12,10"
+                         Margin="3,0,3,0" Cursor="Hand" MouseLeftButtonUp="MethodUsb_Click">
+                    <StackPanel>
+                        <TextBlock Text="USB Bootloader" Foreground="{StaticResource TextPrimary}" FontSize="13" FontWeight="Bold"/>
+                        <TextBlock Text="USB boot mode" Foreground="{StaticResource TextDim}" FontSize="10" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border x:Name="MethodImage" Background="{StaticResource BgLight}" CornerRadius="6" Padding="12,10"
+                         Margin="3,0,3,0" Cursor="Hand" MouseLeftButtonUp="MethodImage_Click">
+                    <StackPanel>
+                        <TextBlock Text="Recovery Image" Foreground="{StaticResource TextPrimary}" FontSize="13" FontWeight="Bold"/>
+                        <TextBlock Text="Flash recovery image" Foreground="{StaticResource TextDim}" FontSize="10" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border x:Name="MethodGpio" Background="{StaticResource BgLight}" CornerRadius="6" Padding="12,10"
+                         Margin="6,0,0,0" Cursor="Hand" MouseLeftButtonUp="MethodGpio_Click">
+                    <StackPanel>
+                        <TextBlock Text="Raspberry Pi GPIO" Foreground="{StaticResource TextPrimary}" FontSize="13" FontWeight="Bold"/>
+                        <TextBlock Text="GPIO serial recovery" Foreground="{StaticResource TextDim}" FontSize="10" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+        </GroupBox>
+
+        <!-- Method Instructions -->
+        <GroupBox x:Name="PanelInstructions" Grid.Row="3" Style="{StaticResource DarkGroupBox}" Header="Step-by-Step Instructions" Margin="0,0,0,12">
+            <StackPanel>
+                <!-- JTAG Instructions (default) -->
+                <StackPanel x:Name="InstrJtag">
+                    <TextBlock Text="JTAG Recovery Steps:" Foreground="{StaticResource TextPrimary}" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,4">
+                        <Run Text="1. Connect JTAG adapter to Proxmark3 JTAG header pins"/>
+                    </TextBlock>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,4">
+                        <Run Text="2. Connect adapter to PC via USB"/>
+                    </TextBlock>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,4">
+                        <Run Text="3. Hold PM3 RESET button and power on"/>
+                    </TextBlock>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,4">
+                        <Run Text="4. Select firmware image below and click Flash"/>
+                    </TextBlock>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,8">
+                        <Run Text="5. Wait for flashing to complete, then power cycle device"/>
+                    </TextBlock>
+                    <TextBlock Text="Note: Requires ARM JTAG adapter (e.g., J-Link, ST-Link)" Foreground="{StaticResource AccentYellow}" FontSize="11"/>
+                </StackPanel>
+
+                <!-- USB Bootloader Instructions -->
+                <StackPanel x:Name="InstrUsb" Visibility="Collapsed">
+                    <TextBlock Text="USB Bootloader Recovery Steps:" Foreground="{StaticResource TextPrimary}" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,4">
+                        <Run Text="1. Hold PM3 button while connecting USB"/>
+                    </TextBlock>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,4">
+                        <Run Text="2. Device should enumerate as bootloader in DFU mode"/>
+                    </TextBlock>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,4">
+                        <Run Text="3. Select firmware image below and click Flash"/>
+                    </TextBlock>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,8">
+                        <Run Text="4. Disconnect and reconnect USB to reboot"/>
+                    </TextBlock>
+                    <TextBlock Text="Note: Only works if bootloader is intact" Foreground="{StaticResource AccentYellow}" FontSize="11"/>
+                </StackPanel>
+
+                <!-- Recovery Image Instructions -->
+                <StackPanel x:Name="InstrImage" Visibility="Collapsed">
+                    <TextBlock Text="Recovery Image Flash Steps:" Foreground="{StaticResource TextPrimary}" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,4">
+                        <Run Text="1. Download the latest recovery image for your device model"/>
+                    </TextBlock>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,4">
+                        <Run Text="2. Place device in flash mode (hold button + connect USB)"/>
+                    </TextBlock>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,4">
+                        <Run Text="3. Select the recovery .bin/.hex image file"/>
+                    </TextBlock>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,8">
+                        <Run Text="4. Click Flash Recovery Firmware below"/>
+                    </TextBlock>
+                    <TextBlock Text="Note: Use the correct image for your hardware variant (PM3 Easy / RDV4)" Foreground="{StaticResource AccentYellow}" FontSize="11"/>
+                </StackPanel>
+
+                <!-- Raspberry Pi GPIO Instructions -->
+                <StackPanel x:Name="InstrGpio" Visibility="Collapsed">
+                    <TextBlock Text="Raspberry Pi GPIO Recovery Steps:" Foreground="{StaticResource TextPrimary}" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,4">
+                        <Run Text="1. Connect PM3 UART RX/TX to Raspberry Pi GPIO pins"/>
+                    </TextBlock>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,4">
+                        <Run Text="2. Connect PM3 RESET pin to GPIO"/>
+                    </TextBlock>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,4">
+                        <Run Text="3. Power PM3 via external power supply"/>
+                    </TextBlock>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,4">
+                        <Run Text="4. Use flasher tool via serial interface"/>
+                    </TextBlock>
+                    <TextBlock Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,8">
+                        <Run Text="5. Select firmware and flash via serial bootloader"/>
+                    </TextBlock>
+                    <TextBlock Text="Note: GPIO wiring: PM3 TX -> Pi RX (GPIO15), PM3 RX -> Pi TX (GPIO14)" Foreground="{StaticResource AccentYellow}" FontSize="11"/>
+                </StackPanel>
+
+                <!-- Firmware File Selection -->
+                <Separator Margin="0,12,0,12" Foreground="{StaticResource BorderDark}"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Firmware Image:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <TextBox x:Name="TxtFirmwarePath" Style="{StaticResource DarkTextBox}" Width="300" Text=""/>
+                    <Button Content="Browse" Style="{StaticResource FlatButton}" Padding="10,6" Margin="8,0,0,0" Click="BtnBrowseFirmware_Click"/>
+                    <Button x:Name="BtnDetectDevice" Content="&#x1F4E1; Detect Device" Style="{StaticResource FlatButton}"
+                            Padding="12,6" Margin="16,0,0,0" Click="BtnDetectDevice_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Flash Button + Progress -->
+        <StackPanel Grid.Row="4" Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <Button x:Name="BtnFlash" Content="&#x26A1; Flash Recovery Firmware" Style="{StaticResource DangerButton}"
+                        Padding="16,10" FontWeight="Bold" Click="BtnFlash_Click"/>
+                <ProgressBar x:Name="ProgressFlash" Width="300" Height="20" Margin="16,0,0,0" Value="0" Maximum="100"/>
+                <TextBlock x:Name="TxtProgress" Text="0%" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="8,0,0,0"/>
+            </StackPanel>
+
+            <!-- Backup Recommendation -->
+            <Border Background="{StaticResource BgMedium}" CornerRadius="6" Padding="12,8" Margin="0,0,0,8">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#x1F4BE; Backup:" Foreground="{StaticResource TextSecondary}" FontSize="12" FontWeight="SemiBold"
+                               VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Button x:Name="BtnBackup" Content="Backup Current Firmware" Style="{StaticResource FlatButton}" Padding="10,6" Click="BtnBackup_Click"/>
+                    <TextBlock Text="Always backup before recovery operations!" Foreground="{StaticResource AccentYellow}" FontSize="11"
+                               VerticalAlignment="Center" Margin="12,0,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Recovery Log -->
+            <GroupBox Style="{StaticResource DarkGroupBox}" Header="Recovery Log" Margin="0,0,0,0">
+                <TextBox x:Name="TxtLog" Style="{StaticResource HexTextBox}" IsReadOnly="True"
+                         VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" AcceptsReturn="True"
+                         Text="Recovery log output will appear here..."/>
+            </GroupBox>
+        </StackPanel>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="5" Background="{StaticResource BgMedium}" CornerRadius="6" Padding="12,8" Margin="0,8,0,0">
+            <TextBlock x:Name="TxtStatus" Text="Ready. Select a recovery method and follow the instructions."
+                       Foreground="{StaticResource TextDim}" FontSize="12"/>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,171 @@
+<UserControl x:Class="Proxmark3GUI.Views.MagicCardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="900" d:DesignWidth="950"
+             Background="{StaticResource BgDark}">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <TextBlock Grid.Row="0" Text="&#x1F9F9; Magic Card" Style="{StaticResource PanelTitle}"/>
+        <TextBlock Grid.Row="0" Text="Configure and write UID/Generic magic cards (Gen1A, Gen2, Gen3, GDM, GTU)"
+                   Style="{StaticResource PanelSubtitle}" Margin="0,28,0,0"/>
+
+        <!-- Card Type Selector -->
+        <GroupBox Grid.Row="1" Style="{StaticResource DarkGroupBox}" Header="Card Type" Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal">
+                <ComboBox x:Name="CmbCardType" Style="{StaticResource DarkComboBox}" Width="200" SelectionChanged="CmbCardType_SelectionChanged">
+                    <ComboBoxItem Content="Gen1A" IsSelected="True"/>
+                    <ComboBoxItem Content="Gen2"/>
+                    <ComboBoxItem Content="Gen3"/>
+                    <ComboBoxItem Content="GDM"/>
+                    <ComboBoxItem Content="GTU"/>
+                    <ComboBoxItem Content="UID Backdoor"/>
+                </ComboBox>
+                <TextBlock x:Name="TxtCardTypeInfo" Text="Gen1A: First generation magic card, supports 4-byte UID"
+                           Foreground="{StaticResource TextDim}" FontSize="11" VerticalAlignment="Center" Margin="12,0,0,0"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Configuration -->
+        <GroupBox Grid.Row="2" Style="{StaticResource DarkGroupBox}" Header="Card Configuration" Margin="0,0,0,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- UID -->
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="UID:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,8"/>
+                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,8">
+                    <ComboBox x:Name="CmbUidMode" Style="{StaticResource DarkComboBox}" Width="120" Margin="0,0,8,0" SelectionChanged="CmbUidMode_SelectionChanged">
+                        <ComboBoxItem Content="4-byte UID" IsSelected="True"/>
+                        <ComboBoxItem Content="7-byte UID"/>
+                    </ComboBox>
+                    <TextBox x:Name="TxtUid" Style="{StaticResource HexTextBox}" Width="220" Text="00000000"
+                             CharacterCasing="Upper" TextChanged="TxtUid_TextChanged"/>
+                    <TextBlock x:Name="TxtUidHint" Text="(14 hex chars for 7-byte)" Foreground="{StaticResource TextDim}" FontSize="10"
+                               VerticalAlignment="Center" Margin="8,0,0,0" Visibility="Collapsed"/>
+                </StackPanel>
+
+                <!-- ATQA -->
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="ATQA:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,8"/>
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBox x:Name="TxtAtqa" Style="{StaticResource HexTextBox}" Width="100" Text="0000" CharacterCasing="Upper"/>
+                    <TextBlock Text="(2 bytes)" Foreground="{StaticResource TextDim}" FontSize="10" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                </StackPanel>
+
+                <!-- SAK -->
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="SAK:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,8"/>
+                <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBox x:Name="TxtSak" Style="{StaticResource HexTextBox}" Width="60" Text="08" CharacterCasing="Upper"/>
+                    <TextBlock Text="(1 byte)" Foreground="{StaticResource TextDim}" FontSize="10" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                </StackPanel>
+
+                <!-- ATS -->
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="ATS:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,8"/>
+                <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBox x:Name="TxtAts" Style="{StaticResource HexTextBox}" Width="280" Text="" CharacterCasing="Upper"/>
+                    <TextBlock Text="(variable length, optional)" Foreground="{StaticResource TextDim}" FontSize="10"
+                               VerticalAlignment="Center" Margin="8,0,0,0"/>
+                </StackPanel>
+
+                <!-- Password (GDM/GTU) -->
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="Password:" Foreground="{StaticResource TextSecondary}" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,12,8"/>
+                <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBox x:Name="TxtPassword" Style="{StaticResource HexTextBox}" Width="220" Text=""
+                             CharacterCasing="Upper"/>
+                    <TextBlock x:Name="TxtPasswordHint" Text="(optional, for GDM/GTU cards)" Foreground="{StaticResource TextDim}" FontSize="10"
+                               VerticalAlignment="Center" Margin="8,0,0,0"/>
+                </StackPanel>
+
+                <!-- Buttons -->
+                <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal" Margin="0,8,0,0">
+                    <Button x:Name="BtnWriteCard" Content="&#x1F4BE; Write to Magic Card" Style="{StaticResource AccentButton}"
+                            Padding="16,8" Click="BtnWriteCard_Click"/>
+                    <Button x:Name="BtnReadCard" Content="&#x1F504; Read Current Card" Style="{StaticResource FlatButton}"
+                            Padding="12,8" Margin="12,0,0,0" Click="BtnReadCard_Click"/>
+                    <Button x:Name="BtnDetect" Content="&#x1F4E1; Detect Magic Card" Style="{StaticResource FlatButton}"
+                            Padding="12,8" Margin="8,0,0,0" Click="BtnDetect_Click"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!-- Status Indicator -->
+        <Border Grid.Row="3" Background="{StaticResource BgMedium}" CornerRadius="6" Padding="16,10" Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal">
+                <Ellipse x:Name="EllipseStatus" Width="14" Height="14" Fill="{StaticResource TextDim}" Margin="0,0,10,0"/>
+                <TextBlock x:Name="TxtStatus" Text="No magic card detected. Click 'Detect Magic Card' to check."
+                           Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Advanced Section -->
+        <GroupBox Grid.Row="4" Style="{StaticResource DarkGroupBox}" Header="Advanced Settings (GTU / Config Block)" Margin="0,0,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- GTU Magic Mode -->
+                <TextBlock Grid.Row="0" Text="GTU MAGIC MODE" Style="{StaticResource SectionLabel}" Margin="0,0,0,4"/>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <CheckBox x:Name="ChkGtuMagicMode" Content="Enable GTU Magic Mode" Style="{StaticResource DarkCheckBox}"
+                              Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center" Margin="120,0,0,0"
+                              Checked="ChkGtuMagicMode_CheckedChanged" Unchecked="ChkGtuMagicMode_CheckedChanged"/>
+                    <ComboBox x:Name="CmbGtuMode" Style="{StaticResource DarkComboBox}" Width="160" Margin="12,0,0,0" IsEnabled="False">
+                        <ComboBoxItem Content="Magic UID mode" IsSelected="True"/>
+                        <ComboBoxItem Content="Magic AID mode"/>
+                        <ComboBoxItem Content="Magic clone mode"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- Configuration Block Editor -->
+                <TextBlock Grid.Row="1" Text="CONFIGURATION BLOCK EDITOR" Style="{StaticResource SectionLabel}" Margin="0,8,0,4"/>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBlock Text="Block #:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBox x:Name="TxtConfigBlockNum" Style="{StaticResource DarkTextBox}" Width="60" Text="0"/>
+                    <Button x:Name="BtnReadConfigBlock" Content="Read Block" Style="{StaticResource FlatButton}" Padding="8,5" Margin="8,0,0,0" Click="BtnReadConfigBlock_Click"/>
+                    <Button x:Name="BtnWriteConfigBlock" Content="Write Block" Style="{StaticResource FlatButton}" Padding="8,5" Margin="4,0,0,0" Click="BtnWriteConfigBlock_Click"/>
+                </StackPanel>
+
+                <!-- Block Data Editor -->
+                <TextBox Grid.Row="2" x:Name="TxtBlockData" Style="{StaticResource HexTextBox}" AcceptsReturn="True"
+                         VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" FontSize="11"
+                         Text="00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="5" Background="{StaticResource BgMedium}" CornerRadius="6" Padding="12,8" Margin="0,8,0,0">
+            <TextBlock x:Name="TxtLogStatus" Text="Ready. Select card type and configure UID to write."
+                       Foreground="{StaticResource TextDim}" FontSize="12"/>
+        </Border>
+    </Grid>
+</UserControl>

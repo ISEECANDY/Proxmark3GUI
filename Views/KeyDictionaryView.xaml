@@ -1,0 +1,195 @@
+<UserControl x:Class="Proxmark3GUI.Views.KeyDictionaryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="900" d:DesignWidth="950"
+             Background="{StaticResource BgDark}">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Panel Title -->
+        <TextBlock Grid.Row="0" Text="&#x1F511; Key Dictionary" Style="{StaticResource PanelTitle}"/>
+        <TextBlock Grid.Row="0" Text="Manage, import, export, and deduplicate MIFARE keys"
+                   Style="{StaticResource PanelSubtitle}" Margin="0,28,0,0"/>
+
+        <!-- Toolbar -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+            <Button x:Name="BtnImport" Content="&#x1F4C1; Import" Style="{StaticResource FlatButton}" Padding="10,6" Margin="0,0,6,0" Click="BtnImport_Click"/>
+            <Button x:Name="BtnExport" Content="&#x1F4C2; Export" Style="{StaticResource FlatButton}" Padding="10,6" Margin="0,0,6,0" Click="BtnExport_Click"/>
+            <Button x:Name="BtnAddKey" Content="&#x2795; Add Key" Style="{StaticResource FlatButton}" Padding="10,6" Margin="0,0,6,0" Click="BtnAddKey_Click"/>
+            <Button x:Name="BtnDedup" Content="&#x1F9F9; Deduplicate" Style="{StaticResource FlatButton}" Padding="10,6" Margin="0,0,6,0" Click="BtnDedup_Click"/>
+            <Button x:Name="BtnStats" Content="&#x1F4CA; Statistics" Style="{StaticResource FlatButton}" Padding="10,6" Margin="0,0,6,0" Click="BtnStats_Click"/>
+            <Button x:Name="BtnClear" Content="Clear" Style="{StaticResource DangerButton}" Padding="10,6" Margin="0,0,0,0" Click="BtnClear_Click"/>
+        </StackPanel>
+
+        <!-- Search / Filter -->
+        <Grid Grid.Row="2" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="TxtSearch" Grid.Column="0" Style="{StaticResource DarkTextBox}" Width="300"
+                     TextChanged="TxtSearch_TextChanged">
+                <TextBox.Text>Search keys (hex)...</TextBox.Text>
+            </TextBox>
+            <ComboBox x:Name="CmbTypeFilter" Grid.Column="1" Style="{StaticResource DarkComboBox}" Width="100" Margin="8,0,0,0" SelectionChanged="CmbTypeFilter_SelectionChanged">
+                <ComboBoxItem Content="All Types" IsSelected="True"/>
+                <ComboBoxItem Content="Key A"/>
+                <ComboBoxItem Content="Key B"/>
+            </ComboBox>
+            <TextBlock Grid.Column="2" x:Name="TxtResultCount" Text="0 keys" Foreground="{StaticResource TextDim}" FontSize="12"
+                       VerticalAlignment="Center" Margin="8,0,0,0"/>
+        </Grid>
+
+        <!-- Key List -->
+        <ListView x:Name="LvKeys" Grid.Row="3" Style="{StaticResource DarkListView}" MinHeight="250">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Key (Hex)" Width="180">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Key}" FontFamily="Consolas" FontSize="12"
+                                           Foreground="{StaticResource AccentCyan}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Type" Width="70">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Type}" FontWeight="Bold" FontSize="12">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Type}" Value="A">
+                                                    <Setter Property="Foreground" Value="{StaticResource AccentBlue}"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Type}" Value="B">
+                                                    <Setter Property="Foreground" Value="{StaticResource AccentOrange}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Source" Width="140" DisplayMemberBinding="{Binding Source}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <!-- Import Section -->
+        <Border x:Name="ImportPanel" Grid.Row="4" Background="{StaticResource BgMedium}" CornerRadius="6"
+                Padding="16" Margin="0,8,0,0" Visibility="Collapsed">
+            <StackPanel>
+                <TextBlock Text="IMPORT KEYS" Foreground="{StaticResource TextSecondary}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBox x:Name="TxtImportPath" Style="{StaticResource DarkTextBox}" Width="300"
+                             Text="keys.dic" VerticalAlignment="Center"/>
+                    <Button Content="Browse" Style="{StaticResource FlatButton}" Padding="10,6" Margin="8,0,0,0" Click="BtnBrowseImport_Click"/>
+                    <ComboBox x:Name="CmbImportFormat" Style="{StaticResource DarkComboBox}" Width="120" Margin="12,0,0,0">
+                        <ComboBoxItem Content="Dict (.dic)" IsSelected="True"/>
+                        <ComboBoxItem Content="Text (.txt)"/>
+                        <ComboBoxItem Content="JSON (.json)"/>
+                    </ComboBox>
+                    <Button x:Name="BtnDoImport" Content="Import" Style="{StaticResource AccentButton}" Padding="12,6" Margin="12,0,0,0" Click="BtnDoImport_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Export Section -->
+        <Border x:Name="ExportPanel" Grid.Row="4" Background="{StaticResource BgMedium}" CornerRadius="6"
+                Padding="16" Margin="0,8,0,0" Visibility="Collapsed">
+            <StackPanel>
+                <TextBlock Text="EXPORT KEYS" Foreground="{StaticResource TextSecondary}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox x:Name="TxtExportPath" Style="{StaticResource DarkTextBox}" Width="300"
+                             Text="export.dic" VerticalAlignment="Center"/>
+                    <Button Content="Browse" Style="{StaticResource FlatButton}" Padding="10,6" Margin="8,0,0,0" Click="BtnBrowseExport_Click"/>
+                    <ComboBox x:Name="CmbExportFormat" Style="{StaticResource DarkComboBox}" Width="120" Margin="12,0,0,0">
+                        <ComboBoxItem Content="Dict (.dic)" IsSelected="True"/>
+                        <ComboBoxItem Content="Text (.txt)"/>
+                        <ComboBoxItem Content="JSON (.json)"/>
+                        <ComboBoxItem Content="CSV (.csv)"/>
+                    </ComboBox>
+                    <Button x:Name="BtnDoExport" Content="Export" Style="{StaticResource AccentButton}" Padding="12,6" Margin="12,0,0,0" Click="BtnDoExport_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Statistics Panel -->
+        <Border x:Name="StatsPanel" Grid.Row="5" Background="{StaticResource BgMedium}" CornerRadius="6"
+                Padding="16" Margin="0,8,0,0" Visibility="Collapsed">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                    <TextBlock Text="Total Keys" Foreground="{StaticResource TextDim}" FontSize="10" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="TxtTotalKeys" Text="0" Foreground="{StaticResource TextPrimary}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                    <TextBlock Text="Unique Keys" Foreground="{StaticResource TextDim}" FontSize="10" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="TxtUniqueKeys" Text="0" Foreground="{StaticResource AccentCyan}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock Text="Key A Count" Foreground="{StaticResource TextDim}" FontSize="10" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="TxtKeyACount" Text="0" Foreground="{StaticResource AccentBlue}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                    <TextBlock Text="Key B Count" Foreground="{StaticResource TextDim}" FontSize="10" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="TxtKeyBCount" Text="0" Foreground="{StaticResource AccentOrange}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="4" HorizontalAlignment="Center">
+                    <TextBlock Text="Sources" Foreground="{StaticResource TextDim}" FontSize="10" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="TxtSourceCount" Text="0" Foreground="{StaticResource TextSecondary}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Add Key Dialog (inline) -->
+        <Border x:Name="AddKeyPanel" Grid.Row="5" Background="{StaticResource BgMedium}" CornerRadius="6"
+                Padding="16" Margin="0,8,0,0" Visibility="Collapsed">
+            <StackPanel>
+                <TextBlock Text="ADD KEY" Foreground="{StaticResource TextSecondary}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Key Hex:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBox x:Name="TxtNewKey" Style="{StaticResource HexTextBox}" Width="160" Text="FFFFFFFFFFFF"/>
+                    <ComboBox x:Name="CmbNewKeyType" Style="{StaticResource DarkComboBox}" Width="80" Margin="12,0,0,0">
+                        <ComboBoxItem Content="A" IsSelected="True"/>
+                        <ComboBoxItem Content="B"/>
+                    </ComboBox>
+                    <ComboBox x:Name="CmbNewKeySource" Style="{StaticResource DarkComboBox}" Width="120" Margin="12,0,0,0">
+                        <ComboBoxItem Content="Manual" IsSelected="True"/>
+                        <ComboBoxItem Content="Dictionary"/>
+                        <ComboBoxItem Content="Cracked"/>
+                    </ComboBox>
+                    <Button x:Name="BtnConfirmAddKey" Content="Add" Style="{StaticResource SuccessButton}" Padding="12,6" Margin="12,0,0,0" Click="BtnConfirmAddKey_Click"/>
+                    <Button Content="Cancel" Style="{StaticResource FlatButton}" Padding="12,6" Margin="8,0,0,0" Click="BtnCancelAddKey_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="6" Background="{StaticResource BgMedium}" CornerRadius="6" Padding="12,8" Margin="0,8,0,0">
+            <TextBlock x:Name="TxtStatus" Text="Ready. Use toolbar to import, add, or manage keys."
+                       Foreground="{StaticResource TextDim}" FontSize="12"/>
+        </Border>
+    </Grid>
+</UserControl>

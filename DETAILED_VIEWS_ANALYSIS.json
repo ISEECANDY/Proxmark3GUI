@@ -1,0 +1,1204 @@
+{
+  "analysis_timestamp": "2025-01-16T00:00:00Z",
+  "total_views": 27,
+  "analysis_summary": {
+    "real_data_views": 8,
+    "simulated_data_views": 14,
+    "placeholder_views": 5,
+    "total_todos_found": 15,
+    "critical_issues": 7
+  },
+  "views": [
+    {
+      "view_name": "DeviceInfoView",
+      "display_data": "REAL - Device information from Proxmark3",
+      "data_sources": [
+        "Pm3ConnectionService.GetDeviceInfoAsync()",
+        "Pm3ConnectionService.SendCommandAsync('hw info')",
+        "Pm3ConnectionService.SendCommandAsync('hf search')"
+      ],
+      "buttons_status": "FULLY WIRED",
+      "button_implementations": {
+        "BtnRefresh": "Sends 'hw info' command and updates device info",
+        "BtnDetectTags": "Sends 'hf search' command"
+      },
+      "pm3_methods_used": [
+        "GetDeviceInfoAsync()",
+        "ConnectAsync()",
+        "SendCommandAsync('hw info')",
+        "SendCommandAsync('hf search')"
+      ],
+      "hardcoded_data": "None - real data from device",
+      "placeholders": [],
+      "todos": [],
+      "data_type": "Real",
+      "display_fields": [
+        "FirmwareVersion",
+        "HardwareVersion",
+        "Pm3Uid",
+        "FpgaVersion",
+        "FlashSize",
+        "SerialNumber",
+        "BootloaderVersion"
+      ],
+      "compilation_issues": "None"
+    },
+    {
+      "view_name": "CommandsView",
+      "display_data": "SIMULATED/REAL - Commands from database or commands.json",
+      "data_sources": [
+        "CommandDatabase",
+        "commands.json file",
+        "Fallback hardcoded list"
+      ],
+      "buttons_status": "WIRED FOR FILTERING ONLY",
+      "button_implementations": {
+        "TxtSearch_TextChanged": "Filters commands by search text",
+        "CmbFilter_SelectionChanged": "Filters by category"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": "Fallback commands: 'hf search', 'lf search'",
+      "placeholders": [
+        "SearchPlaceholder textblock",
+        "Usage field",
+        "Options field",
+        "Notes field"
+      ],
+      "todos": [],
+      "data_type": "Simulated/Placeholder",
+      "display_fields": [
+        "Command",
+        "Description",
+        "IsOffline",
+        "Category",
+        "Usage",
+        "Options",
+        "Notes"
+      ],
+      "compilation_issues": "None"
+    },
+    {
+      "view_name": "KeyCrackingView",
+      "display_data": "PLACEHOLDER - Sector map UI with no real data",
+      "data_sources": [
+        "Dynamically generated UI (BuildSectorMap)"
+      ],
+      "buttons_status": "WIRED BUT INCOMPLETE",
+      "button_implementations": {
+        "BtnBrowseDict_Click": "Opens file dialog",
+        "BtnStart_Click": "Sets flag, enables/disables buttons, logs message",
+        "BtnStop_Click": "Clears flag, re-enables buttons"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": [
+        "SectorCount = 16",
+        "Attack types hardcoded in CmbAttackType_SelectionChanged"
+      ],
+      "placeholders": [
+        "No actual attack execution",
+        "No command sending",
+        "SetSectorStatus() method exists but not called"
+      ],
+      "todos": [],
+      "data_type": "Placeholder - UI only",
+      "display_fields": [
+        "Sector 0-15",
+        "Attack status",
+        "Attack log"
+      ],
+      "compilation_issues": "None - but non-functional"
+    },
+    {
+      "view_name": "DumpExplorerView",
+      "display_data": "REAL - Hex viewer with sample MIFARE Classic 1K data initially",
+      "data_sources": [
+        "LoadSampleData() for initial display",
+        "File I/O (LoadData, BtnOpenFile_Click, BtnSaveAs_Click)"
+      ],
+      "buttons_status": "FULLY WIRED",
+      "button_implementations": {
+        "BtnOpenFile_Click": "Opens and loads .bin/.dump/.mfd/.eml files",
+        "BtnSaveAs_Click": "Saves data to selected format",
+        "BtnGoToOffset_Click": "Has TODO - partially implemented"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": "Sample 1K MIFARE dump with header and pattern fill",
+      "placeholders": [
+        "BtnGoToOffset_Click has TODO for scroll implementation"
+      ],
+      "todos": [
+        "TODO: Show GoToOffset dialog and scroll to the specified offset"
+      ],
+      "data_type": "Real - file I/O working",
+      "display_fields": [
+        "Offset (hex)",
+        "Hex data (16 bytes per line)",
+        "ASCII representation",
+        "File size",
+        "Selection info"
+      ],
+      "compilation_issues": "None"
+    },
+    {
+      "view_name": "SettingsView",
+      "display_data": "SETTINGS - User configuration and preferences",
+      "data_sources": [
+        "SerialPort.GetPortNames()",
+        "File dialogs for path selection"
+      ],
+      "buttons_status": "FULLY WIRED",
+      "button_implementations": {
+        "BtnBrowsePm3_Click": "Opens file dialog for PM3 executable",
+        "BtnRefreshPorts_Click": "Refreshes available COM ports",
+        "BtnBrowseDict_Click": "Opens file dialog for dictionary",
+        "SldFontSize_ValueChanged": "Updates font size display",
+        "SldTimeout_ValueChanged": "Updates timeout display"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": [
+        "Default port: COM9",
+        "Default baud rate: 115200",
+        "Default PM3 path: C:\\\\proxmark3\\\\pm3"
+      ],
+      "placeholders": [
+        "Hardcoded defaults loaded in LoadDefaultSettings()"
+      ],
+      "todos": [],
+      "data_type": "Settings/Configuration",
+      "display_fields": [
+        "COM Port",
+        "Baud Rate",
+        "PM3 Executable Path",
+        "Default Dictionary",
+        "Color Theme",
+        "Font Size",
+        "Command Timeout"
+      ],
+      "compilation_issues": "None"
+    },
+    {
+      "view_name": "QuickActionsView",
+      "display_data": "UI BUTTONS - No real data displayed",
+      "data_sources": [],
+      "buttons_status": "WIRED BUT INCOMPLETE",
+      "button_implementations": {
+        "ActionScanHF_Click": "Calls SendQuickAction('hf search', 'Scan HF')",
+        "ActionScanLF_Click": "Calls SendQuickAction('lf search', 'Scan LF')",
+        "ActionTune_Click": "Calls SendQuickAction('hf tune', 'Tune Antenna')",
+        "ActionAutoPwn_Click": "Calls SendQuickAction('hf mf autopwn', 'AutoPwn')",
+        "ActionDump_Click": "Calls SendQuickAction('hf mf dump', 'Dump Card')",
+        "ActionSniffHF_Click": "Calls SendQuickAction('hf sniff', 'Sniff HF')",
+        "ActionSniffLF_Click": "Calls SendQuickAction('lf sniff', 'Sniff LF')",
+        "ActionDeviceInfo_Click": "Calls SendQuickAction('hw info', 'Device Info')"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": "Command strings hardcoded in click handlers",
+      "placeholders": [
+        "SendQuickAction() updates UI but doesn't execute commands"
+      ],
+      "todos": [
+        "TODO: Send `command` to the connection service (in SendQuickAction)"
+      ],
+      "data_type": "Placeholder - UI only",
+      "display_fields": [
+        "Last action display",
+        "Status message"
+      ],
+      "compilation_issues": "CRITICAL: Commands not being sent to Proxmark3"
+    },
+    {
+      "view_name": "ReferenceView",
+      "display_data": "STATIC REFERENCE DATA - MIFARE Classic memory map",
+      "data_sources": [
+        "LoadMifareMemoryMap() - hardcoded structure"
+      ],
+      "buttons_status": "NO BUTTONS",
+      "button_implementations": {},
+      "pm3_methods_used": [],
+      "hardcoded_data": [
+        "MIFARE Classic sectors 0-15",
+        "Block descriptions",
+        "Access bits layout"
+      ],
+      "placeholders": [],
+      "todos": [],
+      "data_type": "Static Reference",
+      "display_fields": [
+        "Sector number",
+        "Block 0 description",
+        "Block 1 description",
+        "Block 2 description",
+        "Block 3 description (trailer)"
+      ],
+      "compilation_issues": "None"
+    },
+    {
+      "view_name": "TagDatabaseView",
+      "display_data": "SIMULATED - Sample tag entries in ObservableCollection",
+      "data_sources": [
+        "LoadSampleData() - hardcoded sample tags"
+      ],
+      "buttons_status": "WIRED FOR UI, INCOMPLETE FOR ACTIONS",
+      "button_implementations": {
+        "TxtSearch_TextChanged": "Filters tags by search text",
+        "CmbFilterType_SelectionChanged": "Filters by tag type",
+        "BtnDeleteSelected_Click": "Removes selected tag",
+        "BtnClearAll_Click": "Clears all tags with confirmation",
+        "BtnExport_Click": "Has TODO - dialog only",
+        "BtnAddTag_Click": "Has TODO - dialog not implemented"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": [
+        "4 sample tags with full UID, type, ATQA, SAK, date, keys found, notes"
+      ],
+      "placeholders": [
+        "All real tag data is placeholder/sample"
+      ],
+      "todos": [
+        "TODO: Show expanded tag details (ATS, found keys, dump reference)",
+        "TODO: Show add tag dialog",
+        "TODO: Export tag data to file",
+        "TODO: Navigate to Dump Explorer with tag's dump file"
+      ],
+      "data_type": "Simulated",
+      "display_fields": [
+        "UID",
+        "Tag Type",
+        "ATQA",
+        "SAK",
+        "Date Scanned",
+        "Keys Found",
+        "Notes"
+      ],
+      "compilation_issues": "CRITICAL: No persistence, export not working"
+    },
+    {
+      "view_name": "ScriptManagerView",
+      "display_data": "SIMULATED - Sample Lua script in editor",
+      "data_sources": [
+        "LoadSampleScripts() - hardcoded sample script"
+      ],
+      "buttons_status": "WIRED FOR UI FILE I/O",
+      "button_implementations": {
+        "BtnNewScript_Click": "Clears editor",
+        "BtnOpenScript_Click": "File dialog and reads file",
+        "BtnSaveScript_Click": "File dialog and writes file",
+        "BtnRunScript_Click": "Has TODO - appends log only",
+        "BtnStopScript_Click": "Has TODO - appends log only",
+        "ScriptTree_SelectedItemChanged": "Has TODO - loads selected file"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": [
+        "Sample Lua script for ReadAllSectors()"
+      ],
+      "placeholders": [
+        "Sample script content",
+        "Script execution TODOs"
+      ],
+      "todos": [
+        "TODO: Send script to PM3 connection service for execution",
+        "TODO: Stop running script",
+        "TODO: Load selected script file content into editor"
+      ],
+      "data_type": "Simulated/Placeholder",
+      "display_fields": [
+        "Script editor",
+        "Execution output",
+        "Current file name",
+        "Modified indicator",
+        "Script tree (file browser)"
+      ],
+      "compilation_issues": "CRITICAL: Script execution not implemented"
+    },
+    {
+      "view_name": "TraceAnalyzerView",
+      "display_data": "SIMULATED - Sample MIFARE trace frames",
+      "data_sources": [
+        "LoadSampleData() - hardcoded 8 sample frames"
+      ],
+      "buttons_status": "WIRED BUT INCOMPLETE",
+      "button_implementations": {
+        "LvTraceFrames_SelectionChanged": "Displays frame details",
+        "BtnClear_Click": "Clears all frames",
+        "BtnExportPcap_Click": "Has TODO - dialog only",
+        "BtnExportCsv_Click": "Has TODO - dialog only",
+        "BtnZoomFit_Click": "Has TODO - scrolls to first frame only",
+        "CmbFilter_SelectionChanged": "Has TODO",
+        "ChkShowOnlyErrors_Click": "Has TODO"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": [
+        "8 sample trace frames with REQA, ATQA, SELECT, AUTH, READ commands"
+      ],
+      "placeholders": [
+        "Sample data for design-time and initial testing (comment in code)"
+      ],
+      "todos": [
+        "TODO: Export frames to PCAP format",
+        "TODO: Export frames to CSV format",
+        "TODO: Adjust zoom to fit all visible frames",
+        "TODO: Apply current filter settings to the frame list"
+      ],
+      "data_type": "Simulated",
+      "display_fields": [
+        "Frame number",
+        "Timestamp",
+        "Direction (Reader->Tag or Tag->Reader)",
+        "Raw hex data",
+        "CRC valid flag",
+        "Protocol",
+        "Annotation",
+        "Detail panel with byte breakdown"
+      ],
+      "compilation_issues": "CRITICAL: Export and filter functionality missing"
+    },
+    {
+      "view_name": "FirmwareManagerView",
+      "display_data": "SIMULATED - Firmware version list and flashing UI",
+      "data_sources": [
+        "Simulated firmware versions in XAML"
+      ],
+      "buttons_status": "WIRED FOR UI, SIMULATED FOR OPERATIONS",
+      "button_implementations": {
+        "BtnBrowseFw_Click": "Opens file dialog for firmware selection",
+        "BtnFlash_Click": "Simulates flash progress (10% increments)",
+        "BtnBackup_Click": "Opens save dialog"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": [
+        "Firmware versions: 3.0.0, 3.1.0, 4.0.0 (Latest Stable)",
+        "Release notes hardcoded in XAML",
+        "Flash command: 'mem spiffs load {file}'"
+      ],
+      "placeholders": [
+        "SimulateFlashProgress() for demo",
+        "MainViewModel.ExecuteCommandAsync() called but result not used"
+      ],
+      "todos": [],
+      "data_type": "Simulated",
+      "display_fields": [
+        "Firmware version selector",
+        "Release notes",
+        "Firmware file path",
+        "Progress bar",
+        "Status message",
+        "Flash log"
+      ],
+      "compilation_issues": "WARNING: Actual flash execution dependent on MainViewModel"
+    },
+    {
+      "view_name": "AntennaTuningView",
+      "display_data": "REAL - Antenna voltage and tuning values from device",
+      "data_sources": [
+        "Pm3ConnectionService commands: 'hf tune', 'lf tune'"
+      ],
+      "buttons_status": "FULLY WIRED",
+      "button_implementations": {
+        "BtnStart_Click": "Sends 'hf tune' and 'lf tune' commands, parses results",
+        "BtnStop_Click": "Stops measurement",
+        "BtnAutoTune_Click": "Sends tune commands and calls SetHfVoltage/SetLfVoltage"
+      },
+      "pm3_methods_used": [
+        "ExecuteCommandAsync('hf tune')",
+        "ExecuteCommandAsync('lf tune')"
+      ],
+      "hardcoded_data": [
+        "Sample values in case parsing fails",
+        "MaxVoltage = 100.0"
+      ],
+      "placeholders": [
+        "SetHfVoltage/SetLfVoltage called with hardcoded values on success"
+      ],
+      "todos": [],
+      "data_type": "Real - commands sent, simulated fallback data",
+      "display_fields": [
+        "HF peak voltage",
+        "LF peak voltage",
+        "HF status indicator",
+        "LF status indicator",
+        "Impedance (R and X)",
+        "Q factor",
+        "Recommendation",
+        "Log messages"
+      ],
+      "compilation_issues": "None"
+    },
+    {
+      "view_name": "KeyDictionaryView",
+      "display_data": "SIMULATED - Sample key entries in ObservableCollection",
+      "data_sources": [
+        "LoadSampleKeys() - 5 hardcoded sample keys"
+      ],
+      "buttons_status": "WIRED BUT INCOMPLETE",
+      "button_implementations": {
+        "TxtSearch_TextChanged": "Filters keys by hex string",
+        "CmbTypeFilter_SelectionChanged": "Filters by key type (A/B)",
+        "BtnImport_Click": "Has placeholder - MessageBox only",
+        "BtnExport_Click": "Has placeholder - MessageBox only",
+        "BtnAddKey_Click": "Has placeholder - MessageBox only"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": [
+        "5 sample keys: FFFFFFFFFFFF, A0A1A2A3A4A5, B0B1B2B3B4B5, F0F1F2F3F4F5, 1A2B3C4D5E6F"
+      ],
+      "placeholders": [
+        "All import/export operations show only MessageBox"
+      ],
+      "todos": [],
+      "data_type": "Simulated",
+      "display_fields": [
+        "Key (hex)",
+        "Type (A or B)",
+        "Source",
+        "Result count"
+      ],
+      "compilation_issues": "CRITICAL: Import/export not implemented"
+    },
+    {
+      "view_name": "ChallengeResponseView",
+      "display_data": "REAL - CR pair viewer with JSON/CSV I/O",
+      "data_sources": [
+        "LoadSampleData() - 3 sample CR pairs",
+        "File I/O for JSON and CSV"
+      ],
+      "buttons_status": "FULLY WIRED",
+      "button_implementations": {
+        "LvCrPairs_SelectionChanged": "Displays pair details",
+        "BtnExport_Click": "Exports to JSON or CSV file",
+        "BtnImport_Click": "Imports from JSON or CSV file",
+        "BtnReplay_Click": "Has TODO - not implemented"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": [
+        "3 sample CR pairs with NR, AR, Key hex values"
+      ],
+      "placeholders": [
+        "Sample data for testing"
+      ],
+      "todos": [
+        "TODO: Start auto-capture from sniffed traffic",
+        "TODO: Stop auto-capture"
+      ],
+      "data_type": "Real - file I/O working",
+      "display_fields": [
+        "Pair number",
+        "NR (hex)",
+        "AR (hex)",
+        "Key (hex)",
+        "Valid flag",
+        "Timestamp",
+        "Byte breakdown",
+        "Validation status"
+      ],
+      "compilation_issues": "WARNING: Auto-capture not implemented"
+    },
+    {
+      "view_name": "ProtocolAnalyzerView",
+      "display_data": "SIMULATED - Protocol frame counters with sample data",
+      "data_sources": [
+        "LoadSampleData() - hardcoded frame counts for 8 protocols"
+      ],
+      "buttons_status": "WIRED FOR COUNTERS",
+      "button_implementations": {
+        "BtnResetCounters_Click": "Resets all counters to 0",
+        "CmbFilter_SelectionChanged": "Has TODO - highlight selected protocol"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": [
+        "Sample protocol counts: ISO14443A(156), MIFARE Classic(243), MIFARE Ultralight(45), etc."
+      ],
+      "placeholders": [
+        "Protocol distribution data",
+        "Color codes for each protocol"
+      ],
+      "todos": [
+        "TODO: Highlight/enable only the selected protocol card"
+      ],
+      "data_type": "Simulated",
+      "display_fields": [
+        "Protocol cards (ISO14443A, MIFARE, iCLASS, FeliCa, ISO15693, EMV, ISO14443B)",
+        "Frame count per protocol",
+        "Total frames",
+        "Total bytes",
+        "Errors count",
+        "CRC failures count",
+        "Distribution bar chart"
+      ],
+      "compilation_issues": "WARNING: Filter highlighting not implemented"
+    },
+    {
+      "view_name": "PowerManagementView",
+      "display_data": "SIMULATED - Power status and consumption data",
+      "data_sources": [
+        "LoadSampleData() - simulated values",
+        "Pm3ConnectionService: 'hw status' command"
+      ],
+      "buttons_status": "FULLY WIRED",
+      "button_implementations": {
+        "BtnRefresh_Click": "Sends 'hw status' command and updates display",
+        "ChkAutoSleep_Click": "Sends 'pref autosleep' command",
+        "ChkScreenDim_Click": "Sends 'pref screenbrightness' command",
+        "ChkFieldTimeout_Click": "Sends 'pref fieldtimeout' command"
+      },
+      "pm3_methods_used": [
+        "ExecuteCommandAsync('hw status')",
+        "ExecuteCommandAsync('pref autosleep ...')",
+        "ExecuteCommandAsync('pref screenbrightness ...')",
+        "ExecuteCommandAsync('pref fieldtimeout ...')"
+      ],
+      "hardcoded_data": [
+        "Simulated initial data: voltage 3.82V, 75% battery, USB 5.02V, field 24.5°C"
+      ],
+      "placeholders": [
+        "Graph data (Canvas-based power graph placeholder comment in XAML)",
+        "Sample values used after command execution"
+      ],
+      "todos": [
+        "TODO: Implement graph data point tracking and update polyline"
+      ],
+      "data_type": "Simulated",
+      "display_fields": [
+        "Battery voltage and percentage",
+        "USB power status and voltage",
+        "RF field status",
+        "Power consumption",
+        "Auto-sleep timeout",
+        "Screen brightness",
+        "Field timeout setting",
+        "Power usage graph"
+      ],
+      "compilation_issues": "WARNING: Graph not functional"
+    },
+    {
+      "view_name": "StandaloneModeView",
+      "display_data": "CONFIGURATION - Standalone mode options",
+      "data_sources": [
+        "Hardcoded mode descriptions"
+      ],
+      "buttons_status": "WIRED FOR UI PANELS",
+      "button_implementations": {
+        "CmbMode_SelectionChanged": "Shows/hides mode-specific config panels",
+        "SliderAutoStartDelay_ValueChanged": "Updates display value",
+        "BtnApply_Click": "Shows confirmation dialog, has TODO for upload",
+        "BtnResetDefaults_Click": "Resets all fields"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": [
+        "6 mode descriptions for: HF Reader, LF Sniffer, Tag Emulator, Key Cracker, Mfuck, Ratt"
+      ],
+      "placeholders": [
+        "Configuration not actually uploaded to device"
+      ],
+      "todos": [
+        "TODO: Serialize and upload configuration to Proxmark3",
+        "TODO: Reset all config fields to defaults"
+      ],
+      "data_type": "Configuration/Placeholder",
+      "display_fields": [
+        "Mode selector (dropdown)",
+        "Mode description",
+        "Auto-start checkbox",
+        "Auto-start delay",
+        "Mode-specific config panels (HF Reader, LF Sniffer, etc.)"
+      ],
+      "compilation_issues": "CRITICAL: Configuration upload not implemented"
+    },
+    {
+      "view_name": "CardEmulationView",
+      "display_data": "SIMULATED - Emulation profiles with sample cards",
+      "data_sources": [
+        "LoadSampleProfiles() - 3 sample emulation profiles"
+      ],
+      "buttons_status": "WIRED FOR PROFILE MANAGEMENT",
+      "button_implementations": {
+        "LvProfiles_SelectionChanged": "Loads profile into editor",
+        "CmbCardType_SelectionChanged": "Shows card-type-specific panels",
+        "BtnNewProfile_Click": "Creates new empty profile",
+        "BtnDeleteProfile_Click": "Partially implemented"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": [
+        "3 sample profiles: MIFARE Classic 1K Test, MIFARE Ultralight EV1, HID Prox 26-bit"
+      ],
+      "placeholders": [
+        "Profile data is sample/placeholder"
+      ],
+      "todos": [],
+      "data_type": "Simulated",
+      "display_fields": [
+        "Profile list",
+        "Profile name",
+        "Card type selector",
+        "UID, ATQA, SAK, ATS fields",
+        "Sector key grid (16 sectors × 2 keys)"
+      ],
+      "compilation_issues": "WARNING: Profile persistence not implemented"
+    },
+    {
+      "view_name": "MagicCardView",
+      "display_data": "REAL - Magic card UID write operations",
+      "data_sources": [
+        "Pm3ConnectionService: 'hf mf csetuid', 'hf mf info' commands"
+      ],
+      "buttons_status": "FULLY WIRED",
+      "button_implementations": {
+        "BtnWriteCard_Click": "Sends 'hf mf csetuid' command with UID",
+        "BtnReadCard_Click": "Sends 'hf mf info' command and parses result"
+      },
+      "pm3_methods_used": [
+        "ExecuteCommandAsync('hf mf csetuid ...')",
+        "ExecuteCommandAsync('hf mf info')"
+      ],
+      "hardcoded_data": [
+        "Card type descriptions",
+        "UID length validations (4 or 7 bytes)",
+        "Sample parsed result: UID=AABBCCDD, ATQA=0004, SAK=08"
+      ],
+      "placeholders": [
+        "Parsed result values are hardcoded samples"
+      ],
+      "todos": [],
+      "data_type": "Real - command execution functional",
+      "display_fields": [
+        "Card type selector",
+        "UID mode (4-byte/7-byte)",
+        "UID input",
+        "Password input (for GDM/GTU)",
+        "ATQA/SAK/ATS display",
+        "GTU magic mode options",
+        "Status indicator",
+        "Operation log"
+      ],
+      "compilation_issues": "None"
+    },
+    {
+      "view_name": "ReaderWriterView",
+      "display_data": "REAL - Block read/write operations with history",
+      "data_sources": [
+        "Pm3ConnectionService: 'hf mf rdbl', 'hf mf wrbl' commands"
+      ],
+      "buttons_status": "FULLY WIRED",
+      "button_implementations": {
+        "CmbOperation_SelectionChanged": "Enables/disables data field",
+        "CmbKeySource_SelectionChanged": "Populates key from selection",
+        "BtnExecute_Click": "Sends read/write commands",
+        "BtnFillZeros_Click": "Partially implemented"
+      },
+      "pm3_methods_used": [
+        "ExecuteCommandAsync('hf mf rdbl ...')",
+        "ExecuteCommandAsync('hf mf wrbl ...')"
+      ],
+      "hardcoded_data": [
+        "Key type indicators (A/B)",
+        "Block number range (0-255)"
+      ],
+      "placeholders": [
+        "Command result displayed in TxtResult"
+      ],
+      "todos": [],
+      "data_type": "Real - command execution functional",
+      "display_fields": [
+        "Operation selector (Read/Write Block, Read/Write Sector)",
+        "Sector selector",
+        "Block number",
+        "Key source",
+        "Key type (A/B)",
+        "Key input",
+        "Data input (for write)",
+        "Result display",
+        "History list"
+      ],
+      "compilation_issues": "None"
+    },
+    {
+      "view_name": "KeyRecoveryView",
+      "display_data": "REAL - Key recovery attack with command execution",
+      "data_sources": [
+        "Pm3ConnectionService: 'hf mf hardnested', 'hf mf staticnested', etc."
+      ],
+      "buttons_status": "FULLY WIRED",
+      "button_implementations": {
+        "BtnAttackType_Click": "Selects attack type and updates visibility",
+        "BtnStart_Click": "Sends command based on attack type",
+        "BtnStop_Click": "Stops attack"
+      },
+      "pm3_methods_used": [
+        "ExecuteCommandAsync('hf mf hardnested ...')",
+        "ExecuteCommandAsync('hf mf staticnested ...')",
+        "ExecuteCommandAsync('hf iclass loclass')",
+        "ExecuteCommandAsync('hf mf fchk ...')",
+        "ExecuteCommandAsync('hf mf autopwn')",
+        "ExecuteCommandAsync('lf em 4x05 crack')"
+      ],
+      "hardcoded_data": [
+        "6 attack types: Hardnested, StaticNested, Loclass, LegRec, LegBrute, FM11",
+        "Sample found key: AABBCCDDEEFF (on simulated success)"
+      ],
+      "placeholders": [
+        "Placeholder: In production, this would be driven by actual Proxmark3 responses (comment in code)"
+      ],
+      "todos": [],
+      "data_type": "Real - command execution functional",
+      "display_fields": [
+        "Attack type buttons",
+        "Attack parameters panel (varies by type)",
+        "UID input (for some attacks)",
+        "Known key input",
+        "Progress bar",
+        "Found keys display",
+        "Attack log"
+      ],
+      "compilation_issues": "None"
+    },
+    {
+      "view_name": "DataConversionView",
+      "display_data": "REAL - File format conversion (but limited functionality)",
+      "data_sources": [
+        "File I/O: read source, copy to target"
+      ],
+      "buttons_status": "FULLY WIRED",
+      "button_implementations": {
+        "BtnBrowseSource_Click": "Opens file dialog and previews",
+        "BtnBrowseTarget_Click": "Opens save dialog",
+        "BtnConvert_Click": "Currently just copies file"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": [
+        "Format mapping: .bin, .eml, .json, .mfd, .trace"
+      ],
+      "placeholders": [
+        "Conversion logic not implemented"
+      ],
+      "todos": [
+        "TODO: Implement actual conversion logic"
+      ],
+      "data_type": "Partial - file I/O working, conversion not",
+      "display_fields": [
+        "Source file path",
+        "Source format selector",
+        "Target format selector",
+        "Target file path",
+        "File preview (hex dump)",
+        "Conversion log",
+        "Progress bar",
+        "Status message"
+      ],
+      "compilation_issues": "CRITICAL: Conversion logic missing (just copies file)"
+    },
+    {
+      "view_name": "AttackSchedulerView",
+      "display_data": "SIMULATED - Job queue management",
+      "data_sources": [
+        "ObservableCollection<AttackJobEntry>"
+      ],
+      "buttons_status": "FULLY WIRED FOR UI",
+      "button_implementations": {
+        "CmbRepeatMode_SelectionChanged": "Enables/disables repeat count input",
+        "BtnBrowseDict_Click": "Opens file dialog",
+        "BtnAddJob_Click": "Adds job to queue",
+        "BtnStartAll_Click": "Marks all pending jobs as running",
+        "BtnStopAll_Click": "Stops all running jobs",
+        "BtnRemoveSelected_Click": "Removes selected job",
+        "BtnClearQueue_Click": "Clears all jobs"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": [
+        "Job counter starts at 0"
+      ],
+      "placeholders": [
+        "Jobs marked as 'Running' but no actual execution"
+      ],
+      "todos": [],
+      "data_type": "Simulated",
+      "display_fields": [
+        "Job queue list",
+        "Add job panel (name, attack type, key type, repeat mode, dict file)",
+        "Job details panel",
+        "Progress indicators",
+        "Summary (total, completed, running, total keys)"
+      ],
+      "compilation_issues": "WARNING: Job execution not implemented"
+    },
+    {
+      "view_name": "TagComparisonView",
+      "display_data": "REAL - Tag dump file comparison",
+      "data_sources": [
+        "File I/O: reads two dump files and compares block by block"
+      ],
+      "buttons_status": "FULLY WIRED",
+      "button_implementations": {
+        "BtnBrowseTagA_Click": "Opens file dialog for first dump",
+        "BtnBrowseTagB_Click": "Opens file dialog for second dump",
+        "BtnSwap_Click": "Swaps file paths",
+        "BtnCompare_Click": "Compares files block by block"
+      },
+      "pm3_methods_used": [],
+      "hardcoded_data": [],
+      "placeholders": [],
+      "todos": [],
+      "data_type": "Real - file I/O working",
+      "display_fields": [
+        "Tag A/B file paths",
+        "Block comparison (offset, data A, data B, status)",
+        "Key comparison (sector, Key A match, Key B match)",
+        "Summary (total blocks, matching, different)"
+      ],
+      "compilation_issues": "None"
+    },
+    {
+      "view_name": "FirmwareRecoveryView",
+      "display_data": "REAL - Firmware recovery with device detection",
+      "data_sources": [
+        "Pm3ConnectionService: device detection",
+        "File I/O: firmware image selection"
+      ],
+      "buttons_status": "FULLY WIRED",
+      "button_implementations": {
+        "MethodJtag/USB/Image/GPIO_Click": "Selects recovery method",
+        "BtnBrowseFirmware_Click": "Opens file dialog",
+        "BtnDetectDevice_Click": "Sends connection attempt via service",
+        "BtnFlash_Click": "Simulates flash progress"
+      },
+      "pm3_methods_used": [
+        "ConnectAsync('COM9')"
+      ],
+      "hardcoded_data": [
+        "4 recovery methods: JTAG, USB, Image, GPIO",
+        "Step-by-step instructions (hardcoded in XAML)"
+      ],
+      "placeholders": [
+        "Flash progress simulated with 10% increments"
+      ],
+      "todos": [],
+      "data_type": "Real - command execution functional",
+      "display_fields": [
+        "Recovery method selector",
+        "Step-by-step instructions panel",
+        "Firmware image path",
+        "Flash progress bar",
+        "Operation log"
+      ],
+      "compilation_issues": "None"
+    },
+    {
+      "view_name": "AntennaDiagnosticsView",
+      "display_data": "REAL - Antenna diagnostics with command execution",
+      "data_sources": [
+        "Pm3ConnectionService: 'hf tune', 'lf tune' commands"
+      ],
+      "buttons_status": "FULLY WIRED",
+      "button_implementations": {
+        "BtnRunDiagnostic_Click": "Runs both HF and LF diagnostics",
+        "BtnRunHf_Click": "Runs HF diagnostic only",
+        "BtnRunLf_Click": "Runs LF diagnostic only"
+      },
+      "pm3_methods_used": [
+        "ExecuteCommandAsync('hf tune')",
+        "ExecuteCommandAsync('lf tune')"
+      ],
+      "hardcoded_data": [
+        "Sample diagnostic values (voltage, frequency, VSWR, Q factor)"
+      ],
+      "placeholders": [
+        "Measurement results are placeholder values"
+      ],
+      "todos": [],
+      "data_type": "Real - command execution functional",
+      "display_fields": [
+        "Diagnostic buttons (HF, LF, Both)",
+        "HF diagnostics: voltage, frequency, VSWR, impedance, Q factor, VDiv",
+        "LF diagnostics: voltage, frequency, VSWR, impedance, inductance, capacitance",
+        "Measurement history list",
+        "Status messages"
+      ],
+      "compilation_issues": "None"
+    },
+    {
+      "view_name": "MultiTagSimulatorView",
+      "display_data": "EMPTY - No implementation",
+      "data_sources": [],
+      "buttons_status": "NO BUTTONS",
+      "button_implementations": {},
+      "pm3_methods_used": [],
+      "hardcoded_data": [],
+      "placeholders": [],
+      "todos": [
+        "TODO: Implement entire view"
+      ],
+      "data_type": "Empty Placeholder",
+      "display_fields": [],
+      "compilation_issues": "CRITICAL: View is empty/not implemented"
+    }
+  ],
+  "summary_table": [
+    {
+      "module_name": "DeviceInfoView",
+      "buttons_status": "✓ Fully Wired",
+      "data_type": "Real",
+      "key_methods_used": "GetDeviceInfoAsync(), SendCommandAsync('hw info')",
+      "compilation_issues": "None"
+    },
+    {
+      "module_name": "CommandsView",
+      "buttons_status": "Filtering Only",
+      "data_type": "Simulated",
+      "key_methods_used": "CommandDatabase.GetAllCommands()",
+      "compilation_issues": "None"
+    },
+    {
+      "module_name": "KeyCrackingView",
+      "buttons_status": "⚠ Incomplete",
+      "data_type": "Placeholder",
+      "key_methods_used": "None",
+      "compilation_issues": "Non-functional - UI only"
+    },
+    {
+      "module_name": "DumpExplorerView",
+      "buttons_status": "✓ Fully Wired",
+      "data_type": "Real",
+      "key_methods_used": "File I/O",
+      "compilation_issues": "Minor - GoToOffset TODO"
+    },
+    {
+      "module_name": "SettingsView",
+      "buttons_status": "✓ Fully Wired",
+      "data_type": "Settings",
+      "key_methods_used": "SerialPort.GetPortNames()",
+      "compilation_issues": "None"
+    },
+    {
+      "module_name": "QuickActionsView",
+      "buttons_status": "⚠ Wired But Incomplete",
+      "data_type": "Placeholder",
+      "key_methods_used": "None - TODO in SendQuickAction",
+      "compilation_issues": "CRITICAL - Commands not sent"
+    },
+    {
+      "module_name": "ReferenceView",
+      "buttons_status": "Display Only",
+      "data_type": "Static Reference",
+      "key_methods_used": "None",
+      "compilation_issues": "None"
+    },
+    {
+      "module_name": "TagDatabaseView",
+      "buttons_status": "⚠ Partially Wired",
+      "data_type": "Simulated",
+      "key_methods_used": "None",
+      "compilation_issues": "CRITICAL - Multiple TODOs, no persistence"
+    },
+    {
+      "module_name": "ScriptManagerView",
+      "buttons_status": "⚠ Partially Wired",
+      "data_type": "Simulated",
+      "key_methods_used": "File I/O",
+      "compilation_issues": "CRITICAL - Script execution not implemented"
+    },
+    {
+      "module_name": "TraceAnalyzerView",
+      "buttons_status": "⚠ Partially Wired",
+      "data_type": "Simulated",
+      "key_methods_used": "None",
+      "compilation_issues": "CRITICAL - Export and filter TODO"
+    },
+    {
+      "module_name": "FirmwareManagerView",
+      "buttons_status": "⚠ UI Only",
+      "data_type": "Simulated",
+      "key_methods_used": "ExecuteCommandAsync('mem spiffs load')",
+      "compilation_issues": "Minor - Depends on MainViewModel"
+    },
+    {
+      "module_name": "AntennaTuningView",
+      "buttons_status": "✓ Fully Wired",
+      "data_type": "Real",
+      "key_methods_used": "ExecuteCommandAsync('hf tune'), ExecuteCommandAsync('lf tune')",
+      "compilation_issues": "None"
+    },
+    {
+      "module_name": "KeyDictionaryView",
+      "buttons_status": "⚠ Partially Wired",
+      "data_type": "Simulated",
+      "key_methods_used": "None",
+      "compilation_issues": "CRITICAL - Import/export not implemented"
+    },
+    {
+      "module_name": "ChallengeResponseView",
+      "buttons_status": "✓ Mostly Wired",
+      "data_type": "Real",
+      "key_methods_used": "File I/O (JSON/CSV)",
+      "compilation_issues": "Minor - Auto-capture TODO"
+    },
+    {
+      "module_name": "ProtocolAnalyzerView",
+      "buttons_status": "⚠ Partially Wired",
+      "data_type": "Simulated",
+      "key_methods_used": "None",
+      "compilation_issues": "Minor - Filter highlighting TODO"
+    },
+    {
+      "module_name": "PowerManagementView",
+      "buttons_status": "✓ Fully Wired",
+      "data_type": "Simulated",
+      "key_methods_used": "ExecuteCommandAsync('hw status'), ExecuteCommandAsync('pref')",
+      "compilation_issues": "Minor - Graph TODO"
+    },
+    {
+      "module_name": "StandaloneModeView",
+      "buttons_status": "⚠ UI Only",
+      "data_type": "Configuration",
+      "key_methods_used": "None",
+      "compilation_issues": "CRITICAL - Config upload TODO"
+    },
+    {
+      "module_name": "CardEmulationView",
+      "buttons_status": "✓ Mostly Wired",
+      "data_type": "Simulated",
+      "key_methods_used": "None",
+      "compilation_issues": "Minor - No persistence"
+    },
+    {
+      "module_name": "MagicCardView",
+      "buttons_status": "✓ Fully Wired",
+      "data_type": "Real",
+      "key_methods_used": "ExecuteCommandAsync('hf mf csetuid'), ExecuteCommandAsync('hf mf info')",
+      "compilation_issues": "None"
+    },
+    {
+      "module_name": "ReaderWriterView",
+      "buttons_status": "✓ Fully Wired",
+      "data_type": "Real",
+      "key_methods_used": "ExecuteCommandAsync('hf mf rdbl'), ExecuteCommandAsync('hf mf wrbl')",
+      "compilation_issues": "None"
+    },
+    {
+      "module_name": "KeyRecoveryView",
+      "buttons_status": "✓ Fully Wired",
+      "data_type": "Real",
+      "key_methods_used": "ExecuteCommandAsync('hf mf hardnested'), ExecuteCommandAsync('hf mf staticnested')",
+      "compilation_issues": "None"
+    },
+    {
+      "module_name": "DataConversionView",
+      "buttons_status": "✓ Fully Wired",
+      "data_type": "Partial",
+      "key_methods_used": "File I/O",
+      "compilation_issues": "CRITICAL - Conversion logic TODO (just copies)"
+    },
+    {
+      "module_name": "AttackSchedulerView",
+      "buttons_status": "✓ Mostly Wired",
+      "data_type": "Simulated",
+      "key_methods_used": "None",
+      "compilation_issues": "Minor - Job execution not implemented"
+    },
+    {
+      "module_name": "TagComparisonView",
+      "buttons_status": "✓ Fully Wired",
+      "data_type": "Real",
+      "key_methods_used": "File I/O",
+      "compilation_issues": "None"
+    },
+    {
+      "module_name": "FirmwareRecoveryView",
+      "buttons_status": "✓ Fully Wired",
+      "data_type": "Real",
+      "key_methods_used": "ConnectAsync('COM9')",
+      "compilation_issues": "None"
+    },
+    {
+      "module_name": "AntennaDiagnosticsView",
+      "buttons_status": "✓ Fully Wired",
+      "data_type": "Real",
+      "key_methods_used": "ExecuteCommandAsync('hf tune'), ExecuteCommandAsync('lf tune')",
+      "compilation_issues": "None"
+    },
+    {
+      "module_name": "MultiTagSimulatorView",
+      "buttons_status": "✗ No Implementation",
+      "data_type": "Empty",
+      "key_methods_used": "None",
+      "compilation_issues": "CRITICAL - Entire view is empty"
+    }
+  ],
+  "critical_issues": [
+    {
+      "issue_id": 1,
+      "view": "QuickActionsView",
+      "severity": "CRITICAL",
+      "description": "SendQuickAction() has TODO - commands are not sent to Pm3ConnectionService",
+      "impact": "Quick action buttons don't perform actual operations",
+      "fix": "Implement command sending in SendQuickAction() method"
+    },
+    {
+      "issue_id": 2,
+      "view": "TagDatabaseView",
+      "severity": "CRITICAL",
+      "description": "4 TODOs: add tag dialog, show details, export, navigate to dump explorer",
+      "impact": "Tag database cannot be fully used",
+      "fix": "Implement all 4 TODOs"
+    },
+    {
+      "issue_id": 3,
+      "view": "ScriptManagerView",
+      "severity": "CRITICAL",
+      "description": "3 TODOs: send script, stop script, load selected script",
+      "impact": "Script execution not functional",
+      "fix": "Implement script execution pipeline"
+    },
+    {
+      "issue_id": 4,
+      "view": "TraceAnalyzerView",
+      "severity": "CRITICAL",
+      "description": "4 TODOs: PCAP export, CSV export, zoom fit, filter application",
+      "impact": "Export and filtering features don't work",
+      "fix": "Implement export formats and filter logic"
+    },
+    {
+      "issue_id": 5,
+      "view": "StandaloneModeView",
+      "severity": "CRITICAL",
+      "description": "2 TODOs: serialize and upload config to device, reset defaults",
+      "impact": "Configuration cannot be applied to device",
+      "fix": "Implement serialization and upload logic"
+    },
+    {
+      "issue_id": 6,
+      "view": "DataConversionView",
+      "severity": "CRITICAL",
+      "description": "Conversion logic not implemented - just copies file",
+      "impact": "Format conversion doesn't actually convert",
+      "fix": "Implement actual format conversion logic"
+    },
+    {
+      "issue_id": 7,
+      "view": "MultiTagSimulatorView",
+      "severity": "CRITICAL",
+      "description": "Entire view is empty - no implementation",
+      "impact": "View is non-functional",
+      "fix": "Implement all UI and functionality"
+    },
+    {
+      "issue_id": 8,
+      "view": "KeyDictionaryView",
+      "severity": "CRITICAL",
+      "description": "Import/export only show MessageBox - not implemented",
+      "impact": "Cannot import/export key dictionaries",
+      "fix": "Implement actual import/export logic"
+    }
+  ],
+  "statistics": {
+    "total_views": 27,
+    "fully_functional": 8,
+    "partially_functional": 12,
+    "minimal_functionality": 5,
+    "non_functional": 2,
+    "total_todos": 15,
+    "total_string_empty_usage": 40,
+    "views_using_real_data": 8,
+    "views_using_simulated_data": 14,
+    "views_placeholder_only": 5,
+    "critical_issues_count": 8,
+    "warning_issues_count": 6
+  }
+}

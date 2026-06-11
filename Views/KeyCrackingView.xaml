@@ -1,0 +1,138 @@
+<UserControl x:Class="Proxmark3GUI.Views.KeyCrackingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="800" d:DesignWidth="900"
+             Background="{StaticResource BgDark}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel>
+
+            <!-- Panel Title -->
+            <TextBlock Text="&#x1F511; Key Cracking" Style="{StaticResource PanelTitle}"/>
+            <TextBlock Text="Run automated Mifare Classic key recovery attacks"
+                       Style="{StaticResource PanelSubtitle}"/>
+
+            <!-- Attack Selection -->
+            <TextBlock Text="ATTACK TYPE" Style="{StaticResource SectionLabel}"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                <ComboBox x:Name="CmbAttackType" Style="{StaticResource DarkComboBox}" Width="200" Margin="0,0,12,0"
+                          SelectionChanged="CmbAttackType_SelectionChanged">
+                    <ComboBoxItem Content="AutoPwn" IsSelected="True"/>
+                    <ComboBoxItem Content="Darkside"/>
+                    <ComboBoxItem Content="Nested"/>
+                    <ComboBoxItem Content="Hardnested"/>
+                    <ComboBoxItem Content="StaticNested"/>
+                    <ComboBoxItem Content="Brute Force"/>
+                </ComboBox>
+                <TextBlock x:Name="TxtAttackHint" Text="Automatically detects best attack strategy"
+                           Foreground="{StaticResource TextDim}" FontSize="12" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Target Configuration -->
+            <GroupBox Style="{StaticResource DarkGroupBox}" Header="&#x1F3AF; Target Configuration">
+                <Grid Margin="0,4,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Key Type -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Key Type:" Foreground="{StaticResource TextSecondary}"
+                               FontSize="12" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,10">
+                        <CheckBox x:Name="ChkKeyA" Content="Key A" Foreground="{StaticResource TextPrimary}"
+                                  Margin="0,0,16,0" IsChecked="True"/>
+                        <CheckBox x:Name="ChkKeyB" Content="Key B" Foreground="{StaticResource TextPrimary}"/>
+                    </StackPanel>
+
+                    <!-- Sector Range -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Sectors:" Foreground="{StaticResource TextSecondary}"
+                               FontSize="12" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="From" Foreground="{StaticResource TextDim}" FontSize="11"
+                                   VerticalAlignment="Center" Margin="0,0,4,0"/>
+                        <TextBox x:Name="TxtSectorFrom" Style="{StaticResource DarkTextBox}" Width="60"
+                                 Text="0" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="To" Foreground="{StaticResource TextDim}" FontSize="11"
+                                   VerticalAlignment="Center" Margin="0,0,4,0"/>
+                        <TextBox x:Name="TxtSectorTo" Style="{StaticResource DarkTextBox}" Width="60"
+                                 Text="15" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Dictionary File -->
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Dictionary:" Foreground="{StaticResource TextSecondary}"
+                               FontSize="12" VerticalAlignment="Top" Margin="0,4,12,0"/>
+                    <StackPanel Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,4,0,0">
+                        <TextBox x:Name="TxtDictPath" Style="{StaticResource DarkTextBox}" Width="360"
+                                 Text="default.dic" VerticalAlignment="Center"/>
+                        <Button Content="Browse" Style="{StaticResource FlatButton}" Padding="10,6"
+                                Margin="8,0,0,0" Click="BtnBrowseDict_Click"/>
+                    </StackPanel>
+
+                </Grid>
+            </GroupBox>
+
+            <!-- Sector Map -->
+            <TextBlock Text="SECTOR MAP" Style="{StaticResource SectionLabel}"/>
+            <Border Background="{StaticResource BgMedium}" CornerRadius="8" Padding="16" Margin="0,0,0,12">
+                <StackPanel>
+                    <Grid x:Name="SectorMapGrid" Margin="0,0,0,12">
+                        <!-- 16 sector cells built dynamically in code-behind -->
+                    </Grid>
+                    <StackPanel Orientation="Horizontal">
+                        <Rectangle Width="12" Height="12" Fill="#22c55e" RadiusX="2" RadiusY="2" Margin="0,0,4,0"/>
+                        <TextBlock Text="Found" Foreground="{StaticResource TextDim}" FontSize="10" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                        <Rectangle Width="12" Height="12" Fill="#ef4444" RadiusX="2" RadiusY="2" Margin="0,0,4,0"/>
+                        <TextBlock Text="Not Found" Foreground="{StaticResource TextDim}" FontSize="10" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                        <Rectangle Width="12" Height="12" Fill="#64748b" RadiusX="2" RadiusY="2" Margin="0,0,4,0"/>
+                        <TextBlock Text="Unknown" Foreground="{StaticResource TextDim}" FontSize="10" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Progress -->
+            <TextBlock Text="PROGRESS" Style="{StaticResource SectionLabel}"/>
+            <Grid Margin="0,0,0,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ProgressBar x:Name="ProgressBar" Grid.Column="0" Height="8" Value="0" Maximum="100"
+                             Margin="0,0,12,0"/>
+                <TextBlock x:Name="TxtProgress" Grid.Column="1" Text="0%"
+                           Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center"/>
+            </Grid>
+
+            <!-- Log Output -->
+            <TextBlock Text="ATTACK LOG" Style="{StaticResource SectionLabel}"/>
+            <TextBox x:Name="TxtLog" Style="{StaticResource DarkTextBox}" Height="160"
+                     FontFamily="Consolas" FontSize="11" IsReadOnly="True"
+                     VerticalScrollBarVisibility="Auto" AcceptsReturn="True"
+                     TextWrapping="Wrap" Text="Ready. Select attack type and press Start."/>
+            <Button x:Name="BtnClearLog" Content="Clear Log" Style="{StaticResource FlatButton}"
+                    Padding="8,4" Margin="0,4,0,12" Click="BtnClearLog_Click"/>
+
+            <!-- Action Buttons -->
+            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                <Button x:Name="BtnStart" Content="&#x25B6; Start" Style="{StaticResource AccentButton}"
+                        Padding="20,10" Margin="0,0,8,0" Click="BtnStart_Click"/>
+                <Button x:Name="BtnStop" Content="&#x23F9; Stop" Style="{StaticResource FlatButton}"
+                        Padding="20,10" Margin="0,0,8,0" Click="BtnStop_Click"/>
+                <Button x:Name="BtnCancel" Content="&#x2716; Cancel" Style="{StaticResource FlatButton}"
+                        Padding="20,10" Click="BtnCancel_Click"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

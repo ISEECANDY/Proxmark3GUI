@@ -1,0 +1,165 @@
+<UserControl x:Class="Proxmark3GUI.Views.ProtocolAnalyzerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="900" d:DesignWidth="950"
+             Background="{StaticResource BgDark}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel>
+
+            <!-- Panel Title -->
+            <TextBlock Text="&#x1F4CB; Protocol Analyzer" Style="{StaticResource PanelTitle}"/>
+            <TextBlock Text="Monitor and analyze protocol traffic statistics in real-time"
+                       Style="{StaticResource PanelSubtitle}"/>
+
+            <!-- Toolbar -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                <Button x:Name="BtnResetCounters" Content="&#x21BA; Reset Counters" Style="{StaticResource FlatButton}"
+                        Padding="10,6" Margin="0,0,8,0" Click="BtnResetCounters_Click"/>
+                <Separator Width="1" Background="{StaticResource BorderLight}" Margin="6,2"/>
+                <TextBlock Text="Filter:" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Center" Margin="8,0,4,0"/>
+                <ComboBox x:Name="CmbFilter" Style="{StaticResource DarkComboBox}" Width="160" SelectionChanged="CmbFilter_SelectionChanged">
+                    <ComboBoxItem Content="All Protocols" IsSelected="True"/>
+                    <ComboBoxItem Content="ISO14443A"/>
+                    <ComboBoxItem Content="MIFARE Classic"/>
+                    <ComboBoxItem Content="MIFARE Ultralight"/>
+                    <ComboBoxItem Content="iCLASS"/>
+                    <ComboBoxItem Content="FeliCa"/>
+                    <ComboBoxItem Content="ISO15693"/>
+                    <ComboBoxItem Content="EMV"/>
+                    <ComboBoxItem Content="ISO14443B"/>
+                </ComboBox>
+            </StackPanel>
+
+            <!-- Protocol Stat Cards Grid -->
+            <TextBlock Text="PROTOCOL COUNTERS" Style="{StaticResource SectionLabel}"/>
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Row 1 -->
+                <Border Grid.Row="0" Grid.Column="0" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="16" Margin="0,0,8,8">
+                    <StackPanel>
+                        <Rectangle Width="4" Height="28" Fill="{StaticResource AccentBlue}" RadiusX="2" RadiusY="2" Margin="0,0,0,8" HorizontalAlignment="Left"/>
+                        <TextBlock Text="ISO14443A" Foreground="{StaticResource TextSecondary}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBlock x:Name="TxtCount14443A" Text="0" Foreground="{StaticResource AccentBlue}" FontSize="28" FontWeight="Bold"/>
+                        <TextBlock Text="frames" Foreground="{StaticResource TextDim}" FontSize="10"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="0" Grid.Column="1" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="16" Margin="0,0,8,8">
+                    <StackPanel>
+                        <Rectangle Width="4" Height="28" Fill="{StaticResource AccentPrimary}" RadiusX="2" RadiusY="2" Margin="0,0,0,8" HorizontalAlignment="Left"/>
+                        <TextBlock Text="MIFARE Classic" Foreground="{StaticResource TextSecondary}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBlock x:Name="TxtCountMfClassic" Text="0" Foreground="{StaticResource AccentPrimary}" FontSize="28" FontWeight="Bold"/>
+                        <TextBlock Text="frames" Foreground="{StaticResource TextDim}" FontSize="10"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="0" Grid.Column="2" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="16" Margin="0,0,8,8">
+                    <StackPanel>
+                        <Rectangle Width="4" Height="28" Fill="{StaticResource AccentGreen}" RadiusX="2" RadiusY="2" Margin="0,0,0,8" HorizontalAlignment="Left"/>
+                        <TextBlock Text="MIFARE Ultralight" Foreground="{StaticResource TextSecondary}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBlock x:Name="TxtCountMfUltralight" Text="0" Foreground="{StaticResource AccentGreen}" FontSize="28" FontWeight="Bold"/>
+                        <TextBlock Text="frames" Foreground="{StaticResource TextDim}" FontSize="10"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="0" Grid.Column="3" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="16" Margin="0,0,0,8">
+                    <StackPanel>
+                        <Rectangle Width="4" Height="28" Fill="{StaticResource AccentCyan}" RadiusX="2" RadiusY="2" Margin="0,0,0,8" HorizontalAlignment="Left"/>
+                        <TextBlock Text="iCLASS" Foreground="{StaticResource TextSecondary}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBlock x:Name="TxtCountIclass" Text="0" Foreground="{StaticResource AccentCyan}" FontSize="28" FontWeight="Bold"/>
+                        <TextBlock Text="frames" Foreground="{StaticResource TextDim}" FontSize="10"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Row 2 -->
+                <Border Grid.Row="1" Grid.Column="0" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="16" Margin="0,0,8,0">
+                    <StackPanel>
+                        <Rectangle Width="4" Height="28" Fill="{StaticResource AccentRed}" RadiusX="2" RadiusY="2" Margin="0,0,0,8" HorizontalAlignment="Left"/>
+                        <TextBlock Text="FeliCa" Foreground="{StaticResource TextSecondary}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBlock x:Name="TxtCountFelica" Text="0" Foreground="{StaticResource AccentRed}" FontSize="28" FontWeight="Bold"/>
+                        <TextBlock Text="frames" Foreground="{StaticResource TextDim}" FontSize="10"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="1" Grid.Column="1" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="16" Margin="0,0,8,0">
+                    <StackPanel>
+                        <Rectangle Width="4" Height="28" Fill="{StaticResource AccentOrange}" RadiusX="2" RadiusY="2" Margin="0,0,0,8" HorizontalAlignment="Left"/>
+                        <TextBlock Text="ISO15693" Foreground="{StaticResource TextSecondary}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBlock x:Name="TxtCount15693" Text="0" Foreground="{StaticResource AccentOrange}" FontSize="28" FontWeight="Bold"/>
+                        <TextBlock Text="frames" Foreground="{StaticResource TextDim}" FontSize="10"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="1" Grid.Column="2" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="16" Margin="0,0,8,0">
+                    <StackPanel>
+                        <Rectangle Width="4" Height="28" Fill="{StaticResource AccentYellow}" RadiusX="2" RadiusY="2" Margin="0,0,0,8" HorizontalAlignment="Left"/>
+                        <TextBlock Text="EMV" Foreground="{StaticResource TextSecondary}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBlock x:Name="TxtCountEmv" Text="0" Foreground="{StaticResource AccentYellow}" FontSize="28" FontWeight="Bold"/>
+                        <TextBlock Text="frames" Foreground="{StaticResource TextDim}" FontSize="10"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="1" Grid.Column="3" Background="{StaticResource BgMedium}" CornerRadius="8" Padding="16" Margin="0,0,0,0">
+                    <StackPanel>
+                        <Rectangle Width="4" Height="28" Fill="{StaticResource AccentSecondary}" RadiusX="2" RadiusY="2" Margin="0,0,0,8" HorizontalAlignment="Left"/>
+                        <TextBlock Text="ISO14443B" Foreground="{StaticResource TextSecondary}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBlock x:Name="TxtCount14443B" Text="0" Foreground="{StaticResource AccentSecondary}" FontSize="28" FontWeight="Bold"/>
+                        <TextBlock Text="frames" Foreground="{StaticResource TextDim}" FontSize="10"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Live Statistics -->
+            <TextBlock Text="LIVE STATISTICS" Style="{StaticResource SectionLabel}"/>
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                    <TextBlock Text="Total Frames" Foreground="{StaticResource TextDim}" FontSize="10" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="TxtTotalFrames" Text="0" Foreground="{StaticResource TextPrimary}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                    <TextBlock Text="Bytes Transmitted" Foreground="{StaticResource TextDim}" FontSize="10" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="TxtBytesTotal" Text="0" Foreground="{StaticResource TextPrimary}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock Text="Errors" Foreground="{StaticResource TextDim}" FontSize="10" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="TxtErrors" Text="0" Foreground="{StaticResource AccentRed}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                    <TextBlock Text="CRC Failures" Foreground="{StaticResource TextDim}" FontSize="10" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="TxtCrcFailures" Text="0" Foreground="{StaticResource AccentOrange}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Protocol Distribution Chart -->
+            <TextBlock Text="PROTOCOL DISTRIBUTION" Style="{StaticResource SectionLabel}"/>
+            <Border Background="{StaticResource BgMedium}" CornerRadius="8" Padding="20" Margin="0,0,0,16">
+                <StackPanel>
+                    <ItemsControl x:Name="DistributionBars">
+                        <!-- Built dynamically in code-behind -->
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

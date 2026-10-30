@@ -44,21 +44,15 @@ public partial class SettingsView : UserControl
             .OrderBy(p => p, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        if (ports.Count == 0)
-        {
-            CmbPortName.Items.Add(new ComboBoxItem { Content = "No serial ports found" });
-            CmbPortName.SelectedIndex = 0;
-            return;
-        }
+        CmbPortName.Items.Add(new ComboBoxItem { Content = "Select a serial port..." });
 
         foreach (var port in ports)
             CmbPortName.Items.Add(new ComboBoxItem { Content = port });
 
-        var preferred = "COM9";
-        var selectedIndex = ports.FindIndex(p => string.Equals(p, preferred, StringComparison.OrdinalIgnoreCase));
-        if (selectedIndex < 0)
-            selectedIndex = ports.FindIndex(p => string.Equals(p, current, StringComparison.OrdinalIgnoreCase));
-        CmbPortName.SelectedIndex = selectedIndex >= 0 ? selectedIndex : 0;
+        // Never guess which device the operator intends to use. Preserve an existing
+        // selection when it is still present; otherwise require an explicit choice.
+        var selectedIndex = ports.FindIndex(p => string.Equals(p, current, StringComparison.OrdinalIgnoreCase));
+        CmbPortName.SelectedIndex = selectedIndex >= 0 ? selectedIndex + 1 : 0;
     }
 
     private void SldFontSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

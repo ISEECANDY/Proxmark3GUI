@@ -1,33 +1,41 @@
 # Proxmark3 Studio
 
-A native Windows desktop application for working with Proxmark3 devices and the RRG/Iceman client.
+A professional native Windows desktop application for Proxmark3 devices, built around the existing Proxmark3GUI project and the RRG/Iceman client.
 
 ## Project direction
 
-The goal is a polished, professional Windows GUI that makes supported Proxmark3 workflows discoverable and usable without requiring a terminal for normal operation. The application will be capability-aware: available features depend on the connected hardware, firmware, and client version.
+The goal is a polished Windows GUI that makes supported Proxmark3 workflows discoverable and usable without requiring a visible terminal for normal operation. Features must be capability-aware: availability depends on the connected hardware, firmware, and client version.
 
-The GUI is not intended to replace or casually reimplement the upstream Proxmark3 protocol stack. The integration strategy will be validated against the pinned upstream client before it is finalized.
+**This project is an evolution of the existing WPF application, not a replacement rewrite.** The current repository already contains 27 WPF views, a client process integration service, a command database, and a large set of device/client files. The plan is to preserve that work and improve it in controlled phases.
 
-## Current status
+## Current technology
 
-This repository is being organized in staged phases. The current branch, `phase-0-project-baseline`, records the initial project baseline and implementation plan. It does not yet contain a complete or buildable Windows application.
+- Windows 11 x64
+- Existing WPF desktop UI
+- Current project target: .NET 8 (net8.0-windows)
+- Planned framework upgrade: .NET 10, after a reproducible baseline build
+- MVVM-inspired structure and dependency injection
+- Existing command catalogue: 819 JSON entries (not 819 proven unique executable operations)
+- Existing hidden child-process integration for the Proxmark3 client
 
 See:
+- [Repository source audit](docs/REPOSITORY_AUDIT.md)
 - [Project baseline](docs/PROJECT_BASELINE.md)
 - [Implementation roadmap](docs/IMPLEMENTATION_ROADMAP.md)
 
-## Initial technology direction
+## Working branch
 
-- Windows 11 x64
-- C# / .NET 10
-- WinUI 3 and Windows App SDK
-- MVVM and dependency injection
-- SQLite for application metadata
-- Serilog for structured diagnostics
-- xUnit for automated tests
+The current planning and audit work is on phase-0-project-baseline. No existing application source files have been replaced by this branch's documentation changes.
 
-Exact package versions and SDK requirements will be pinned when the Windows build environment is established.
+## Engineering priorities
+
+1. Establish a clean, reproducible Windows build and test baseline.
+2. Harden client process lifecycle, output handling, cancellation, and timeouts.
+3. Separate process-running state from actual device readiness.
+4. Verify command catalogue entries against the real upstream client.
+5. Replace simulated or placeholder features incrementally.
+6. Protect sensitive key/card data and require confirmation for state-changing operations.
 
 ## Upstream
 
-The application integrates with the [RfidResearchGroup Proxmark3 repository](https://github.com/RfidResearchGroup/proxmark3). Upstream licensing and source-distribution obligations must be respected for any bundled or modified components.
+The application integrates with [RfidResearchGroup/proxmark3](https://github.com/RfidResearchGroup/proxmark3). Upstream revision pinning, notices, and corresponding-source obligations must be respected for distributed upstream components.

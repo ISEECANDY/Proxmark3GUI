@@ -148,7 +148,9 @@ public partial class SettingsView : UserControl
             }
 
             // Apply settings
-            service.PortName = (CmbPortName.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "";
+            service.PortName = CmbPortName.SelectedIndex > 0
+                ? (CmbPortName.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? string.Empty
+                : string.Empty;
             service.BaudRate = int.Parse((CmbBaudRate.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "115200");
             service.Pm3ExePath = TxtPm3Path.Text;
 

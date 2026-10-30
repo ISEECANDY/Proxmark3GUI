@@ -16,7 +16,7 @@ public sealed class Pm3ConnectionService : IDisposable
 
     public static Pm3ConnectionService Instance => _instance.Value;
 
-    public string PortName { get; set; } = "COM9";
+    public string PortName { get; set; } = string.Empty;
     public int BaudRate { get; set; } = 460800;
     public string Pm3ExePath { get; set; } = Path.Combine(AppContext.BaseDirectory, "client", "proxmark3.exe");
     public bool IsConnected => _process is { HasExited: false };
@@ -47,7 +47,7 @@ public sealed class Pm3ConnectionService : IDisposable
                 PortName = portName;
 
             if (string.IsNullOrWhiteSpace(PortName))
-                PortName = "COM9";
+                throw new ArgumentException("Select an available serial port before connecting.", nameof(portName));
 
             if (IsConnected)
                 return Task.CompletedTask;

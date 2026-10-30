@@ -206,6 +206,12 @@ public sealed class Pm3ConnectionService : IDisposable
         if (string.IsNullOrWhiteSpace(line))
             return;
 
+        if (string.Equals(line.Trim(), "__PM3GUI_COMMAND_COMPLETE__", StringComparison.Ordinal))
+        {
+            CompleteActiveCommand();
+            return;
+        }
+
         eventHandler?.Invoke(this, line);
 
         lock (_sync)

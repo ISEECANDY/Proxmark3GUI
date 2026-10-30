@@ -65,3 +65,15 @@ The GUI must run a `proxmark3.exe` rebuilt from the modified vendored client sou
 - Fatal client errors and process exit before the marker.
 - Marker handling when output is split across pipe read boundaries (the current line-based reader should deliver the complete marker line).
 - Ensuring marker output cannot be mistaken for user-visible command output.
+
+## Windows build automation
+
+A GitHub Actions workflow has been added at `.github/workflows/windows-build.yml`.
+
+- Runs on `windows-latest` for pushes and pull requests targeting `main`, `version-2`, or this hardening branch.
+- Installs the .NET 8 SDK.
+- Restores and builds the WPF project in Release configuration.
+- Does not claim to build the vendored C client or validate device communication.
+
+The workflow has been committed but its first hosted run has not yet been observed. A green CI result is still required before treating the WPF project as build-verified. The next step remains to introduce a controllable client-process seam and automated fake-client tests; CI can then be extended to run those tests.
+

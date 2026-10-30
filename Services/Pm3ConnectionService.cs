@@ -77,7 +77,7 @@ public sealed class Pm3ConnectionService : IDisposable
             };
             _process.OutputDataReceived += OnOutputDataReceived;
             _process.ErrorDataReceived += OnErrorDataReceived;
-            _process.Exited += (_, _) => ConnectionChanged?.Invoke(this, false);
+            _process.Exited += OnProcessExited;
 
             if (!_process.Start())
                 throw new InvalidOperationException("Failed to start proxmark3 client.");
@@ -97,7 +97,7 @@ public sealed class Pm3ConnectionService : IDisposable
         {
             process = _process;
             _process = null;
-            CompleteActiveCommand(string.Empty);
+            CompleteActiveCommand(error: new IOException("The Proxmark3 client disconnected while a command was running."));
         }
 
         if (process is null)
@@ -162,7 +162,13 @@ public sealed class Pm3ConnectionService : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(CommandTimeoutMs);
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCts.Token);
-        using var registration = linkedCts.Token.Register(() => CompleteActiveCommand());
+        using var registration = linkedCts.Token.Register(() =>
+        {
+            if (ct.IsCancellationRequested)
+                CompleteActiveCommand(error: new OperationCanceledException("The Proxmark3 command was cancelled.", ct));
+            else
+                CompleteActiveCommand(error: new TimeoutException($"The Proxmark3 command exceeded the {CommandTimeoutMs} ms timeout."));
+        });
 
         return await completion.Task;
     }
@@ -173,6 +179,12 @@ public sealed class Pm3ConnectionService : IDisposable
     {
         var raw = string.Join(Environment.NewLine, await SendCommandAsync("hw version"), await SendCommandAsync("hw status"));
         return ParseDeviceInfo(raw);
+    }
+
+    private void OnProcessExited(object? sender, EventArgs e)
+    {
+        CompleteActiveCommand(error: new IOException("The Proxmark3 client process exited while a command was running."));
+        ConnectionChanged?.Invoke(this, false);
     }
 
     private void OnOutputDataReceived(object sender, DataReceivedEventArgs e)
@@ -213,7 +225,7 @@ public sealed class Pm3ConnectionService : IDisposable
         _commandIdleTimer.Change(CommandIdleMs, Timeout.Infinite);
     }
 
-    private void CompleteActiveCommand(string? forcedOutput = null)
+    private void CompleteActiveCommand(string? forcedOutput = null, Exception? error = null)
     {
         TaskCompletionSource<string>? completion;
         string output;
@@ -230,7 +242,12 @@ public sealed class Pm3ConnectionService : IDisposable
             _commandIdleTimer?.Change(Timeout.Infinite, Timeout.Infinite);
         }
 
-        completion.TrySetResult(output);
+        if (error is OperationCanceledException cancellation)
+            completion.TrySetCanceled(cancellation.CancellationToken);
+        else if (error is not null)
+            completion.TrySetException(error);
+        else
+            completion.TrySetResult(output);
     }
 
     private static Pm3DeviceInfo ParseDeviceInfo(string raw)

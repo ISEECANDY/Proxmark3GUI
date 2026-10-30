@@ -574,6 +574,11 @@ check_script:
                 // process cmd
                 g_pendingPrompt = false;
                 mainret = CommandReceived(cmd);
+                // Private stdout marker used by the Windows GUI host to delimit commands.
+                // In stdin-pipe mode the normal interactive prompt is not emitted after each command.
+                if (stdinOnPipe) {
+                    PrintAndLogEx(NORMAL, "__PM3GUI_COMMAND_COMPLETE__");
+                }
 
                 // exit or quit
                 if (mainret == PM3_EFATAL) {

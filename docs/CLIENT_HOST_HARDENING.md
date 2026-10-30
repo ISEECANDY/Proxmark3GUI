@@ -26,7 +26,7 @@ The public method signatures remain unchanged. Existing callers that await SendC
 
 1. The 900 ms idle-gap heuristic still decides ordinary command completion and can truncate commands that pause longer than the idle window.
 2. ConnectAsync still reports process startup as connected; it does not yet prove the device has initialized.
-3. COM9 and MSYS path assumptions remain hard-coded.
+3. MSYS runtime-path assumptions remain hard-coded; the COM9 default has now been removed.
 4. The service remains a static singleton and is not yet isolated behind a testable interface.
 5. No fake-client integration tests have been added yet.
 
@@ -77,3 +77,8 @@ A GitHub Actions workflow has been added at `.github/workflows/windows-build.yml
 
 The workflow has been committed but its first hosted run has not yet been observed. A green CI result is still required before treating the WPF project as build-verified. The next step remains to introduce a controllable client-process seam and automated fake-client tests; CI can then be extended to run those tests.
 
+## Explicit serial-port selection
+
+The connection service no longer defaults to COM9. Its port value starts empty, and `ConnectAsync` rejects a missing selection instead of silently targeting a guessed port. The Settings view now refreshes the actual ports reported by Windows, presents a neutral “Select a serial port...” entry, preserves a still-valid prior selection, and requires a real port entry before applying connection settings. This avoids connecting to an unrelated serial device merely because it happens to occupy a conventional COM number.
+
+This is a source-level change only; the WPF workflow still needs its first successful run. Hardware enumeration and connection have not been tested on a Windows machine with a Proxmark3 attached.

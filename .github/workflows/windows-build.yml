@@ -1,0 +1,41 @@
+name: Windows desktop build
+
+on:
+  push:
+    branches:
+      - main
+      - version-2
+      - phase-1-client-host-hardening
+  pull_request:
+    branches:
+      - main
+      - version-2
+      - phase-1-client-host-hardening
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-wpf:
+    name: Build WPF application
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Display SDK information
+        run: dotnet --info
+
+      - name: Restore application
+        run: dotnet restore ./Proxmark3GUI.csproj
+
+      - name: Build application
+        run: dotnet build ./Proxmark3GUI.csproj --configuration Release --no-restore

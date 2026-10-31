@@ -155,3 +155,12 @@ The command host now binds cancellation, timeout, and idle-timer completion to t
 This closes the identified stale-callback race at source level. The explicit completion marker itself still carries no session identifier; a very late marker arriving after a previous command has timed out could theoretically be mistaken for the current command's marker. A future protocol revision should include a monotonically increasing command/session identifier in the marker and validate it in the host.
 
 No build or runtime test was run in this session. Deterministic callback-race tests and fake-client process integration tests remain required.
+
+
+## Thread-safe client process state
+
+The public `IsConnected` property previously read the mutable `Process` reference without taking the service lock. During startup, the process object is assigned before `Start()` completes; a concurrent state query could therefore inspect a process that has not started yet. Concurrent disconnect/disposal could also race the read.
+
+The property now reads the process reference under the same synchronization lock used by connect and disconnect. It treats an unstarted or disposed process handle as not connected rather than allowing `Process.HasExited` to throw through a UI binding or status query.
+
+This only reports the local child-process state. It does not prove that the Proxmark3 hardware is present or ready. No build or runtime test was run in this session.

@@ -456,12 +456,17 @@ public sealed class Pm3ConnectionService : IDisposable
 
     public void Dispose()
     {
-        if (_disposed)
-            return;
+        lock (_sync)
+        {
+            if (_disposed)
+                return;
 
-        _disposed = true;
+            // Serialize disposal with ConnectAsync and command submission.
+            // Disconnect runs after releasing this lock and safely reacquires it.
+            _disposed = true;
+        }
+
         Disconnect();
-        _commandIdleTimer?.Dispose();
         GC.SuppressFinalize(this);
     }
 }

@@ -144,3 +144,14 @@ The Windows workflow now runs this test project after building the WPF applicati
 Command submission now checks caller cancellation before creating a command session. The stdin write and flush are guarded because the child process can exit after the initial `HasExited` check but before the command is written. If the pipe is already closed or unavailable, the active command session is completed with an I/O failure and its state is cleared rather than leaving the service permanently reporting that another command is running.
 
 This is a source-level race hardening change. A process-backed integration test is still required to exercise the exact exit-during-write timing on Windows.
+
+
+## Command-session callback isolation
+
+A further concurrency review found that cancellation registrations and the shared idle timer could outlive the command that created them. If an old callback was already queued as one command completed, it could run after the next command started and accidentally complete that newer command.
+
+The command host now binds cancellation, timeout, and idle-timer completion to the exact `TaskCompletionSource` instance for that command session. Completion checks that the expected session is still active before changing shared state. The idle timer is created for the active session and disposed when that session completes, so a queued callback from an earlier timer cannot finish a later command.
+
+This closes the identified stale-callback race at source level. The explicit completion marker itself still carries no session identifier; a very late marker arriving after a previous command has timed out could theoretically be mistaken for the current command's marker. A future protocol revision should include a monotonically increasing command/session identifier in the marker and validate it in the host.
+
+No build or runtime test was run in this session. Deterministic callback-race tests and fake-client process integration tests remain required.

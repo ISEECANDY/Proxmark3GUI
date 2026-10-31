@@ -18,7 +18,26 @@ public sealed class Pm3ConnectionService : IDisposable
     public string PortName { get; set; } = string.Empty;
     public int BaudRate { get; set; } = 115200;
     public string Pm3ExePath { get; set; } = Path.Combine(AppContext.BaseDirectory, "client", "proxmark3.exe");
-    public bool IsConnected => _process is { HasExited: false };
+    public bool IsConnected
+    {
+        get
+        {
+            lock (_sync)
+            {
+                if (_process is null)
+                    return false;
+
+                try
+                {
+                    return !_process.HasExited;
+                }
+                catch (InvalidOperationException)
+                {
+                    return false;
+                }
+            }
+        }
+    }
 
     public event EventHandler<string>? OutputReceived;
     public event EventHandler<string>? ErrorReceived;

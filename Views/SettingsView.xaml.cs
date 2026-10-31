@@ -25,7 +25,7 @@ public partial class SettingsView : UserControl
     {
         // Load default/saved settings
         if (CmbPortName != null) CmbPortName.SelectedIndex = 0;
-        if (CmbBaudRate != null) CmbBaudRate.SelectedIndex = 2; // 115200
+        if (CmbBaudRate != null) CmbBaudRate.SelectedIndex = 4; // 115200
         if (TxtPm3Path != null) TxtPm3Path.Text = Path.Combine(AppContext.BaseDirectory, "client", "proxmark3.exe");
         if (CmbColorTheme != null) CmbColorTheme.SelectedIndex = 0;
         if (SldFontSize != null) { SldFontSize.Value = 12; TxtFontSizeValue.Text = "12px"; }

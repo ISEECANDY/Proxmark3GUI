@@ -122,3 +122,18 @@ Connection notifications and the Settings confirmation now describe what is actu
 Settings no longer sends an unsolicited `hf mf info` command after connection. Connecting should establish the client session only; any card or tag operation must be initiated deliberately by the operator.
 
 These changes are source-reviewed only. Windows compilation, process fault-injection tests, and hardware readiness validation remain outstanding.
+
+
+## Testable client-output protocol
+
+The output-line handling used by the process host has been extracted into `Services/ClientOutputProtocol.cs`. This isolates ANSI escape removal, blank-line handling, and exact completion-marker recognition from WPF and operating-system process APIs.
+
+A small .NET 8 MSTest project under `tests/Proxmark3GUI.Tests` links that protocol source directly, allowing these deterministic cases to run on a non-Windows test runner as well as Windows:
+
+- Null and whitespace-only lines are ignored.
+- ANSI terminal sequences are removed while meaningful text is preserved.
+- Trailing whitespace is trimmed without changing meaningful leading/interior spacing.
+- The exact private completion marker is recognised, including harmless surrounding whitespace.
+- Partial markers and ordinary output are not treated as command completion.
+
+The Windows workflow now runs this test project after building the WPF application. The tests have been committed but have not yet been executed in this session. They test the extracted line protocol only; they do not replace the planned fake-process integration tests for cancellation, timeout, process exit, reconnect, or command lifecycle races.

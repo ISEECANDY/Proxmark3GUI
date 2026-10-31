@@ -52,7 +52,7 @@ public sealed class Pm3ConnectionService : IDisposable
             if (IsConnected)
                 return Task.CompletedTask;
 
-            ResolveLaunchTarget(out var clientExe, out var workingDir);
+            ResolveLaunchTarget(Pm3ExePath, out var clientExe, out var workingDir);
             Pm3ExePath = clientExe;
 
             var startInfo = new ProcessStartInfo
@@ -337,17 +337,26 @@ public sealed class Pm3ConnectionService : IDisposable
         return Array.Empty<string>();
     }
 
-    private static void ResolveLaunchTarget(out string clientExe, out string workingDir)
+    private static void ResolveLaunchTarget(string? configuredPath, out string clientExe, out string workingDir)
     {
-        var candidates = new[]
+        // The Settings view explicitly asks the operator to select an executable.
+        // Honour that path rather than silently launching a different bundled client.
+        if (!string.IsNullOrWhiteSpace(configuredPath))
         {
-            Path.Combine(AppContext.BaseDirectory, "client", "proxmark3.exe"),
-            Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "client", "proxmark3.exe")),
-            Path.Combine(Environment.CurrentDirectory, "client", "proxmark3.exe"),
-        };
+            var selectedPath = Path.GetFullPath(configuredPath.Trim());
+            if (!File.Exists(selectedPath))
+                throw new FileNotFoundException("The configured Proxmark3 executable does not exist.", selectedPath);
 
-        clientExe = candidates.FirstOrDefault(File.Exists)
-            ?? throw new FileNotFoundException("Could not find client\\proxmark3.exe.");
+            clientExe = selectedPath;
+            workingDir = Path.GetDirectoryName(selectedPath) ?? Environment.CurrentDirectory;
+            return;
+        }
+
+        var bundledPath = Path.Combine(AppContext.BaseDirectory, "client", "proxmark3.exe");
+        if (!File.Exists(bundledPath))
+            throw new FileNotFoundException("Could not find the bundled client\\proxmark3.exe.", bundledPath);
+
+        clientExe = bundledPath;
         workingDir = Path.GetDirectoryName(clientExe) ?? Environment.CurrentDirectory;
     }
 

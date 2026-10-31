@@ -147,6 +147,7 @@ public sealed class Pm3ConnectionService : IDisposable
     public async Task<string> SendCommandRawAsync(string command, CancellationToken ct)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(command);
+        ct.ThrowIfCancellationRequested();
 
         Process process;
         TaskCompletionSource<string> completion;
@@ -166,9 +167,19 @@ public sealed class Pm3ConnectionService : IDisposable
             _activeCommandCompletion = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             completion = _activeCommandCompletion;
 
-            process.StandardInput.WriteLine(command);
-            process.StandardInput.Flush();
-            ResetCommandIdleTimer();
+            try
+            {
+                // A process can exit between the HasExited check and the pipe write.
+                // Never leave an active command session behind if stdin is already closed.
+                process.StandardInput.WriteLine(command);
+                process.StandardInput.Flush();
+                ResetCommandIdleTimer();
+            }
+            catch (Exception ex) when (ex is IOException or InvalidOperationException or ObjectDisposedException)
+            {
+                CompleteActiveCommand(error: new IOException("Could not send the command because the Proxmark3 client input pipe is unavailable.", ex));
+                throw;
+            }
         }
 
         using var timeoutCts = new CancellationTokenSource(CommandTimeoutMs);

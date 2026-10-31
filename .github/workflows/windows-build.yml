@@ -39,3 +39,6 @@ jobs:
 
       - name: Build application
         run: dotnet build ./Proxmark3GUI.csproj --configuration Release --no-restore
+
+      - name: Run client protocol tests
+        run: dotnet test ./tests/Proxmark3GUI.Tests/Proxmark3GUI.Tests.csproj --configuration Release

@@ -167,7 +167,7 @@ public partial class SettingsView : UserControl
             try
             {
                 await service.ConnectAsync(service.PortName);
-                MessageBox.Show($"Connected to Proxmark3 on {service.PortName}!", "Success", 
+                MessageBox.Show($"Proxmark3 client started for {service.PortName}. Device readiness has not yet been confirmed.", "Client Started", 
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 BtnApply.Content = "✓ Connected";
 

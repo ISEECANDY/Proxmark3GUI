@@ -98,3 +98,11 @@ The launcher now:
 The Settings page now defaults and resets to the bundled executable path. This fixes configuration consistency at source level, but has not yet been compiled or exercised on Windows. The fixed MSYS runtime PATH candidates remain a separate portability issue.
 
 A related settings review found the initial baud-rate selection used ComboBox index 2 (38,400 baud) despite a comment claiming 115,200. The default selection now uses index 4, matching the actual 115,200 option and the XAML default. The Reset action already selected index 4. This is a source correction only; no serial-device test has been run.
+
+## Startup connection safety and baud-rate consistency
+
+A follow-up review found that the main view model still attempted an automatic connection to COM9 during application startup. This bypassed the new explicit-port-selection workflow in Settings and could attach to an unrelated serial device. Startup no longer launches the client or selects a port automatically; the operator must initiate connection after choosing the intended port.
+
+The connection service's own default baud rate also differed from the Settings page's selected default. It now defaults to 115200 so callers that do not explicitly apply Settings do not silently launch with 460800 while the UI indicates 115200.
+
+These are source-level corrections. Windows build, serial enumeration, and physical Proxmark3 connection tests remain outstanding.

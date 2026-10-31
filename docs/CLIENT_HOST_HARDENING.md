@@ -164,3 +164,12 @@ The public `IsConnected` property previously read the mutable `Process` referenc
 The property now reads the process reference under the same synchronization lock used by connect and disconnect. It treats an unstarted or disposed process handle as not connected rather than allowing `Process.HasExited` to throw through a UI binding or status query.
 
 This only reports the local child-process state. It does not prove that the Proxmark3 hardware is present or ready. No build or runtime test was run in this session.
+
+
+## Serialized service disposal
+
+A lifecycle review found that `Dispose()` changed the disposed flag outside the service lock. A concurrent `ConnectAsync()` or command submission could pass its disposed check while shutdown was beginning.
+
+Disposal now acquires the same lock used by connection startup and command submission before setting the disposed flag. It then releases the lock and calls `Disconnect()`, which performs its normal synchronized cleanup. This makes disposal idempotent and serializes the transition into the disposed state with operations that create or use the child process.
+
+This is source-level hardening only. Concurrent connect/dispose and repeated-dispose tests should be added to the planned fake-process integration suite; no build or runtime test was run in this session.

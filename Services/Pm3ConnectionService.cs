@@ -173,11 +173,11 @@ public sealed class Pm3ConnectionService : IDisposable
                 // Never leave an active command session behind if stdin is already closed.
                 process.StandardInput.WriteLine(command);
                 process.StandardInput.Flush();
-                ResetCommandIdleTimer();
+                ResetCommandIdleTimer(completion);
             }
             catch (Exception ex) when (ex is IOException or InvalidOperationException)
             {
-                CompleteActiveCommand(error: new IOException("Could not send the command because the Proxmark3 client input pipe is unavailable.", ex));
+                CompleteActiveCommand(completion, error: new IOException("Could not send the command because the Proxmark3 client input pipe is unavailable.", ex));
                 throw;
             }
         }
@@ -187,9 +187,9 @@ public sealed class Pm3ConnectionService : IDisposable
         using var registration = linkedCts.Token.Register(() =>
         {
             if (ct.IsCancellationRequested)
-                CompleteActiveCommand(error: new OperationCanceledException("The Proxmark3 command was cancelled.", ct));
+                CompleteActiveCommand(completion, error: new OperationCanceledException("The Proxmark3 command was cancelled.", ct));
             else
-                CompleteActiveCommand(error: new TimeoutException($"The Proxmark3 command exceeded the {CommandTimeoutMs} ms timeout."));
+                CompleteActiveCommand(completion, error: new TimeoutException($"The Proxmark3 command exceeded the {CommandTimeoutMs} ms timeout."));
         });
 
         return await completion.Task;
@@ -250,34 +250,55 @@ public sealed class Pm3ConnectionService : IDisposable
             if (_activeCommandOutput is not null)
             {
                 _activeCommandOutput.AppendLine(line);
-                ResetCommandIdleTimer();
-
+                if (_activeCommandCompletion is { } completion)
+                    ResetCommandIdleTimer(completion);
             }
         }
     }
 
-    private void ResetCommandIdleTimer()
+    private void ResetCommandIdleTimer(TaskCompletionSource<string> expectedCompletion)
     {
-        _commandIdleTimer ??= new Timer(_ => CompleteActiveCommand(), null, Timeout.Infinite, Timeout.Infinite);
+        // Each timer callback is bound to the command session that created it.
+        // A callback already queued by an earlier command cannot complete a later command.
+        if (!ReferenceEquals(_activeCommandCompletion, expectedCompletion))
+            return;
+
+        if (_commandIdleTimer is null)
+        {
+            _commandIdleTimer = new Timer(
+                _ => CompleteActiveCommand(expectedCompletion),
+                null,
+                Timeout.Infinite,
+                Timeout.Infinite);
+        }
+
         _commandIdleTimer.Change(CommandIdleMs, Timeout.Infinite);
     }
 
-    private void CompleteActiveCommand(string? forcedOutput = null, Exception? error = null)
+    private void CompleteActiveCommand(
+        TaskCompletionSource<string>? expectedCompletion = null,
+        string? forcedOutput = null,
+        Exception? error = null)
     {
         TaskCompletionSource<string>? completion;
+        Timer? idleTimer;
         string output;
 
         lock (_sync)
         {
             completion = _activeCommandCompletion;
-            if (completion is null)
+            if (completion is null ||
+                (expectedCompletion is not null && !ReferenceEquals(completion, expectedCompletion)))
                 return;
 
             output = forcedOutput ?? _activeCommandOutput?.ToString().TrimEnd() ?? string.Empty;
             _activeCommandCompletion = null;
             _activeCommandOutput = null;
-            _commandIdleTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+            idleTimer = _commandIdleTimer;
+            _commandIdleTimer = null;
         }
+
+        idleTimer?.Dispose();
 
         if (error is OperationCanceledException cancellation)
             completion.TrySetCanceled(cancellation.CancellationToken);

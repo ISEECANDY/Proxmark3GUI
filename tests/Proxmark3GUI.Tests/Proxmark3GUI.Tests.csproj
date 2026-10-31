@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Compile Include="../../Services/ClientOutputProtocol.cs" Link="ClientOutputProtocol.cs" />
+    <Compile Include="../../Services/DeviceInfoTextParser.cs" Link="DeviceInfoTextParser.cs" />
   </ItemGroup>
 
 </Project>

@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Proxmark3GUI.Services;
@@ -52,7 +53,8 @@ public partial class App : Application
         ServiceProvider = services.BuildServiceProvider();
 
         var cmdDb = ServiceProvider.GetRequiredService<CommandDatabase>();
-        cmdDb.LoadFromFile("commands.json");
+        var commandsPath = Path.Combine(AppContext.BaseDirectory, "commands.json");
+        cmdDb.LoadFromFile(commandsPath);
 
         var mainWindow = new MainWindow(ServiceProvider.GetRequiredService<MainViewModel>());
         mainWindow.Show();

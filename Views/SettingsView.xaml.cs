@@ -171,10 +171,6 @@ public partial class SettingsView : UserControl
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 BtnApply.Content = "✓ Connected";
 
-                var probe = await service.SendCommandAsync("hf mf info");
-                if (!string.IsNullOrWhiteSpace(probe))
-                    MessageBox.Show("hf mf info completed. Check the console output panel for the live response.", "Probe Complete",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (FileNotFoundException)
             {

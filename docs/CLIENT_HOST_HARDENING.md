@@ -106,3 +106,9 @@ A follow-up review found that the main view model still attempted an automatic c
 The connection service's own default baud rate also differed from the Settings page's selected default. It now defaults to 115200 so callers that do not explicitly apply Settings do not silently launch with 460800 while the UI indicates 115200.
 
 These are source-level corrections. Windows build, serial enumeration, and physical Proxmark3 connection tests remain outstanding.
+
+## Command catalogue deployment path
+
+The application previously loaded `commands.json` using a working-directory-relative path. That can fail when the GUI is launched from a shortcut or another directory. Startup now resolves the catalogue relative to `AppContext.BaseDirectory`, matching the project configuration that copies the file beside the application executable.
+
+This prevents launch location from changing whether the command browser can load its catalogue. It remains unverified by a Windows build or packaged-app launch test.

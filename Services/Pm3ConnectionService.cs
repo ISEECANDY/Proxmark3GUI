@@ -12,7 +12,6 @@ namespace Proxmark3GUI.Services;
 public sealed class Pm3ConnectionService : IDisposable
 {
     private static readonly Lazy<Pm3ConnectionService> _instance = new(() => new Pm3ConnectionService());
-    private static readonly Regex AnsiRegex = new(@"\x1B\[[0-?]*[ -/]*[@-~]", RegexOptions.Compiled);
 
     public static Pm3ConnectionService Instance => _instance.Value;
 
@@ -224,14 +223,10 @@ public sealed class Pm3ConnectionService : IDisposable
 
     private void HandleClientLine(string? rawLine, EventHandler<string>? eventHandler)
     {
-        if (string.IsNullOrWhiteSpace(rawLine))
+        if (!ClientOutputProtocol.TryNormalizeLine(rawLine, out var line))
             return;
 
-        var line = AnsiRegex.Replace(rawLine, string.Empty).TrimEnd();
-        if (string.IsNullOrWhiteSpace(line))
-            return;
-
-        if (string.Equals(line.Trim(), "__PM3GUI_COMMAND_COMPLETE__", StringComparison.Ordinal))
+        if (ClientOutputProtocol.IsCompletionMarker(line))
         {
             CompleteActiveCommand();
             return;

@@ -137,3 +137,10 @@ A small .NET 8 MSTest project under `tests/Proxmark3GUI.Tests` links that protoc
 - Partial markers and ordinary output are not treated as command completion.
 
 The Windows workflow now runs this test project after building the WPF application. The tests have been committed but have not yet been executed in this session. They test the extracted line protocol only; they do not replace the planned fake-process integration tests for cancellation, timeout, process exit, reconnect, or command lifecycle races.
+
+
+## Command submission pipe failure
+
+Command submission now checks caller cancellation before creating a command session. The stdin write and flush are guarded because the child process can exit after the initial `HasExited` check but before the command is written. If the pipe is already closed or unavailable, the active command session is completed with an I/O failure and its state is cleared rather than leaving the service permanently reporting that another command is running.
+
+This is a source-level race hardening change. A process-backed integration test is still required to exercise the exact exit-during-write timing on Windows.

@@ -173,3 +173,10 @@ A lifecycle review found that `Dispose()` changed the disposed flag outside the 
 Disposal now acquires the same lock used by connection startup and command submission before setting the disposed flag. It then releases the lock and calls `Disconnect()`, which performs its normal synchronized cleanup. This makes disposal idempotent and serializes the transition into the disposed state with operations that create or use the child process.
 
 This is source-level hardening only. Concurrent connect/dispose and repeated-dispose tests should be added to the planned fake-process integration suite; no build or runtime test was run in this session.
+
+
+## Device information output parsing
+
+A parser review found the dotted key/value separator expression had an incorrectly escaped quantifier. The old pattern did not reliably recognize status lines such as `Flash size........ 256KB`. The separator handling is now extracted into `DeviceInfoTextParser`, with support for colon, equals, repeated-dot, and repeated-whitespace layouts. This keeps the output parsing logic independent of WPF and makes it testable in the cross-platform test project.
+
+Five focused tests cover the supported layouts, unstructured lines, and null input. These tests have been added to the Windows CI test project but have not been executed in this session. The parser remains intentionally tolerant because Proxmark3 client output can vary by command and firmware/client version.

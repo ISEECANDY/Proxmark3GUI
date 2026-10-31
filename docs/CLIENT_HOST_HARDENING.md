@@ -82,3 +82,17 @@ The workflow has been committed but its first hosted run has not yet been observ
 The connection service no longer defaults to COM9. Its port value starts empty, and `ConnectAsync` rejects a missing selection instead of silently targeting a guessed port. The Settings view now refreshes the actual ports reported by Windows, presents a neutral “Select a serial port...” entry, preserves a still-valid prior selection, and requires a real port entry before applying connection settings. This avoids connecting to an unrelated serial device merely because it happens to occupy a conventional COM number.
 
 This is a source-level change only; the WPF workflow still needs its first successful run. Hardware enumeration and connection have not been tested on a Windows machine with a Proxmark3 attached.
+
+
+## Configured client executable path
+
+A settings-path defect was found during the next source review: the UI stored `Pm3ExePath`, but the process launcher ignored it and searched only fixed bundled locations. The settings page also started with a directory-like legacy value rather than an executable path.
+
+The launcher now:
+
+- Uses the configured executable path exactly when one is supplied.
+- Validates that the selected file exists and reports the missing path instead of silently launching a different client.
+- Uses the bundled `client\\proxmark3.exe` only when the configured path is empty.
+- Sets the working directory to the selected executable's directory so adjacent client runtime files can be resolved.
+
+The Settings page now defaults and resets to the bundled executable path. This fixes configuration consistency at source level, but has not yet been compiled or exercised on Windows. The fixed MSYS runtime PATH candidates remain a separate portability issue.

@@ -175,7 +175,7 @@ public sealed class Pm3ConnectionService : IDisposable
                 process.StandardInput.Flush();
                 ResetCommandIdleTimer();
             }
-            catch (Exception ex) when (ex is IOException or InvalidOperationException or ObjectDisposedException)
+            catch (Exception ex) when (ex is IOException or InvalidOperationException)
             {
                 CompleteActiveCommand(error: new IOException("Could not send the command because the Proxmark3 client input pipe is unavailable.", ex));
                 throw;

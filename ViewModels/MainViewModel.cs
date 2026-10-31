@@ -287,7 +287,7 @@ public sealed class MainViewModel : ObservableObject
         // ── Select the first panel (Device Info) ──────────────────────────────
         SelectPanel(NavigationItems[0]);
 
-        _ = ConnectOnStartupAsync();
+        // Device connection is operator-initiated from Settings or the Connect control.
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -443,20 +443,6 @@ public sealed class MainViewModel : ObservableObject
         }
 
         await ExecuteCommandAsync(command);
-    }
-
-    private async Task ConnectOnStartupAsync()
-    {
-        try
-        {
-            AppendConsole("[Connecting] Starting Proxmark3 client from client folder...");
-            await _pm3.ConnectAsync(string.IsNullOrWhiteSpace(_pm3.PortName) ? "COM9" : _pm3.PortName);
-            AppendConsole("[Ready] Proxmark3 client process is running.");
-        }
-        catch (Exception ex)
-        {
-            AppendConsole($"[Connection error] {ex.Message}");
-        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════════

@@ -79,11 +79,23 @@ public sealed class Pm3ConnectionService : IDisposable
             _process.ErrorDataReceived += OnErrorDataReceived;
             _process.Exited += OnProcessExited;
 
-            if (!_process.Start())
-                throw new InvalidOperationException("Failed to start proxmark3 client.");
+            try
+            {
+                if (!_process.Start())
+                    throw new InvalidOperationException("Failed to start proxmark3 client.");
 
-            _process.BeginOutputReadLine();
-            _process.BeginErrorReadLine();
+                _process.BeginOutputReadLine();
+                _process.BeginErrorReadLine();
+            }
+            catch
+            {
+                _process.OutputDataReceived -= OnOutputDataReceived;
+                _process.ErrorDataReceived -= OnErrorDataReceived;
+                _process.Exited -= OnProcessExited;
+                _process.Dispose();
+                _process = null;
+                throw;
+            }
         }
 
         ConnectionChanged?.Invoke(this, true);
@@ -183,6 +195,19 @@ public sealed class Pm3ConnectionService : IDisposable
 
     private void OnProcessExited(object? sender, EventArgs e)
     {
+        var isCurrentProcess = false;
+        lock (_sync)
+        {
+            if (ReferenceEquals(_process, sender))
+            {
+                _process = null;
+                isCurrentProcess = true;
+            }
+        }
+
+        if (!isCurrentProcess)
+            return;
+
         CompleteActiveCommand(error: new IOException("The Proxmark3 client process exited while a command was running."));
         ConnectionChanged?.Invoke(this, false);
     }

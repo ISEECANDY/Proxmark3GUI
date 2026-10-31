@@ -96,3 +96,5 @@ The launcher now:
 - Sets the working directory to the selected executable's directory so adjacent client runtime files can be resolved.
 
 The Settings page now defaults and resets to the bundled executable path. This fixes configuration consistency at source level, but has not yet been compiled or exercised on Windows. The fixed MSYS runtime PATH candidates remain a separate portability issue.
+
+A related settings review found the initial baud-rate selection used ComboBox index 2 (38,400 baud) despite a comment claiming 115,200. The default selection now uses index 4, matching the actual 115,200 option and the XAML default. The Reset action already selected index 4. This is a source correction only; no serial-device test has been run.

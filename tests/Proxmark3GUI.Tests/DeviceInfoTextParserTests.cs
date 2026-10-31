@@ -16,7 +16,7 @@ public sealed class DeviceInfoTextParserTests
     [TestMethod]
     public void SplitKeyValue_ParsesDottedStatusSeparator()
     {
-        CollectionAssert.AreEqual(new[] { "Flash size", "  256KB" }, DeviceInfoTextParser.SplitKeyValue("Flash size........  256KB"));
+        CollectionAssert.AreEqual(new[] { "Flash size", "256KB" }, DeviceInfoTextParser.SplitKeyValue("Flash size........  256KB"));
     }
 
     [TestMethod]

@@ -343,7 +343,7 @@ public sealed class Pm3ConnectionService : IDisposable
                 continue;
             }
 
-            var parts = SplitDeviceInfoKeyValue(line);
+            var parts = DeviceInfoTextParser.SplitKeyValue(line);
             if (parts.Length < 2)
                 continue;
 
@@ -387,26 +387,6 @@ public sealed class Pm3ConnectionService : IDisposable
         return info;
     }
 
-    private static string[] SplitDeviceInfoKeyValue(string line)
-    {
-        var colonIdx = line.IndexOf(':');
-        if (colonIdx >= 0)
-            return new[] { line[..colonIdx], line[(colonIdx + 1)..] };
-
-        var equalsIdx = line.IndexOf('=');
-        if (equalsIdx >= 0)
-            return new[] { line[..equalsIdx], line[(equalsIdx + 1)..] };
-
-        var match = System.Text.RegularExpressions.Regex.Match(line, @"^(.*?)\.{{2,}}\s*(.+)$");
-        if (match.Success)
-            return new[] { match.Groups[1].Value, match.Groups[2].Value };
-
-        match = System.Text.RegularExpressions.Regex.Match(line, @"^(.+?)\s{2,}(.+)$");
-        if (match.Success)
-            return new[] { match.Groups[1].Value, match.Groups[2].Value };
-
-        return Array.Empty<string>();
-    }
 
     private static void ResolveLaunchTarget(string? configuredPath, out string clientExe, out string workingDir)
     {

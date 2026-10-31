@@ -112,3 +112,13 @@ These are source-level corrections. Windows build, serial enumeration, and physi
 The application previously loaded `commands.json` using a working-directory-relative path. That can fail when the GUI is launched from a shortcut or another directory. Startup now resolves the catalogue relative to `AppContext.BaseDirectory`, matching the project configuration that copies the file beside the application executable.
 
 This prevents launch location from changing whether the command browser can load its catalogue. It remains unverified by a Windows build or packaged-app launch test.
+
+## Process lifecycle and connection-state wording
+
+The client host now cleans up a failed process start (event subscriptions, process handle, and stored reference) rather than leaving a stale process object behind. The process-exit handler only updates state when the exiting process is still the active client, preventing a late event from an old process from marking a newer session as disconnected.
+
+Connection notifications and the Settings confirmation now describe what is actually known: the local Proxmark3 client process has started or stopped. Process creation alone does not prove that a physical device completed USB/serial initialisation. A future readiness handshake should establish that distinction before the UI reports a device as ready.
+
+Settings no longer sends an unsolicited `hf mf info` command after connection. Connecting should establish the client session only; any card or tag operation must be initiated deliberately by the operator.
+
+These changes are source-reviewed only. Windows compilation, process fault-injection tests, and hardware readiness validation remain outstanding.

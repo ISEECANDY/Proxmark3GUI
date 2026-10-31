@@ -638,8 +638,8 @@ public sealed class MainViewModel : ObservableObject
         {
             IsConnected = connected;
             AppendConsole(connected
-                ? "[Connected] Proxmark3 device is online."
-                : "[Disconnected] Proxmark3 device is offline.");
+                ? "[Client started] Proxmark3 client process is running; device readiness is not yet confirmed."
+                : "[Client stopped] Proxmark3 client process is not running.");
             
             // Update command availability
             CommandManager.InvalidateRequerySuggested();
